@@ -47,6 +47,7 @@
 
         .header-title {
             text-align: center;
+            flex-grow: 1;
         }
 
         .header-title h1 {
@@ -68,10 +69,6 @@
             cursor: pointer;
             padding: 4px 8px;
             border-radius: 6px;
-        }
-
-        .menu-btn:active {
-            background: #30363d;
         }
 
         /* Views */
@@ -125,7 +122,7 @@
             margin-top: 8px;
         }
 
-        /* Status Box */
+        /* Status Box & Alerts */
         .status-box {
             background: #21262d;
             border-left: 4px solid #2ea043;
@@ -137,13 +134,21 @@
             line-height: 1.4;
         }
 
-        .status-box strong {
-            color: #f0f6fc;
+        .warning-box {
+            background: rgba(210, 153, 34, 0.1);
+            border: 1px solid #d29922;
+            color: #d29922;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
 
         /* Input & Buttons */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
@@ -166,6 +171,11 @@
         .form-control:focus {
             outline: none;
             border-color: #2ea043;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
         }
 
         .btn-action {
@@ -191,6 +201,46 @@
         .btn-secondary {
             background: #21262d;
             border: 1px solid #30363d;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .auth-toggle a {
+            color: #2ea043;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* VIP Table Styling */
+        .vip-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .vip-table th, .vip-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+            font-size: 13px;
+        }
+
+        .vip-table th {
+            color: #8b949e;
+            background: #21262d;
+        }
+
+        .vip-table td {
+            color: #c9d1d9;
+        }
+
+        .vip-table tr:hover {
+            background: #21262d;
         }
 
         /* Sidebar Overlay Drawer */
@@ -319,9 +369,8 @@
 <body>
 
     <div class="app-container">
-        <!-- Top Navigation Header -->
         <div class="header-bar">
-            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <button class="menu-btn hidden" id="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
                 <h1>DBL Portal</h1>
                 <span>Dollar Burst Limited</span>
@@ -329,25 +378,69 @@
             <div style="width: 24px;"></div>
         </div>
 
-        <!-- Dashboard View -->
-        <div id="view-dashboard" class="view-content">
+        <div id="view-login" class="view-content">
+            <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Sign In</h2>
+            <div class="form-group">
+                <label>Gmail / Email Address</label>
+                <input type="email" id="login-email" class="form-control" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="login-password" class="form-control" placeholder="Enter password">
+            </div>
+            <button class="btn-action" onclick="handleLogin()">Login</button>
+            <div class="auth-toggle">
+                Don't have an account? <a href="#" onclick="switchAuthView('register')">Register</a>
+            </div>
+        </div>
+
+        <div id="view-register" class="view-content hidden">
+            <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Create Account</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="reg-name" class="form-control" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label>Gmail Address</label>
+                <div class="input-group">
+                    <input type="email" id="reg-email" class="form-control" placeholder="example@gmail.com">
+                    <button class="btn-action btn-secondary" style="width: 120px; margin-bottom: 0;" onclick="sendVerificationCode()">Send OTP</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Verification Code (OTP)</label>
+                <input type="text" id="reg-otp" class="form-control" placeholder="Enter 6-digit verification code">
+            </div>
+            <div class="form-group">
+                <label>Create Password</label>
+                <input type="password" id="reg-password" class="form-control" placeholder="Create password">
+                <div class="warning-box">
+                    ⚠️ <strong>Warning:</strong> Choose your password carefully. It cannot be changed later!
+                </div>
+            </div>
+            <button class="btn-action" onclick="handleRegister()">Register</button>
+            <div class="auth-toggle">
+                Already have an account? <a href="#" onclick="switchAuthView('login')">Login</a>
+            </div>
+        </div>
+
+        <div id="view-dashboard" class="view-content hidden">
             <div class="welcome-text">Welcome, <span id="user-display-name">Anas Khan</span>!</div>
             
             <div class="balance-card">
                 <div class="balance-title">Current Balance</div>
-                <div class="balance-amount">$<span id="balance">55001.00</span></div>
-                <div class="vip-badge" id="vip-level-badge">VIP 11 Tier</div>
+                <div class="balance-amount">$<span id="balance">100.00</span></div>
+                <div class="vip-badge" id="vip-level-badge">VIP 1 Tier</div>
             </div>
 
             <div class="status-box">
-                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">50.00</span> reward.
+                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">1.00</span> reward.
             </div>
 
             <button class="btn-action" id="task-btn" onclick="claimTaskReward()">Complete Daily Task</button>
             <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
 
-        <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit USDT</h2>
             <div class="status-box">
@@ -364,7 +457,6 @@
             <div class="qr-placeholder">USDT QR CODE</div>
         </div>
 
-        <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
             <div class="form-group">
@@ -385,7 +477,35 @@
             <button class="btn-action" onclick="alert('Withdrawal request submitted successfully!')">Request Withdrawal</button>
         </div>
 
-        <!-- Announcement View -->
+        <div id="view-vips" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">VIP Tiers Overview</h2>
+            <div class="status-box">
+                Upgrade your VIP tier by increasing your total account balance to unlock higher daily earnings.
+            </div>
+            <table class="vip-table">
+                <thead>
+                    <tr>
+                        <th>Tier Level</th>
+                        <th>Required Balance</th>
+                        <th>Daily Reward</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>VIP 1</td><td>$100.00</td><td>$1.00 / day</td></tr>
+                    <tr><td>VIP 2</td><td>$200.00</td><td>$2.00 / day</td></tr>
+                    <tr><td>VIP 3</td><td>$500.00</td><td>$5.00 / day</td></tr>
+                    <tr><td>VIP 4</td><td>$800.00</td><td>$8.00 / day</td></tr>
+                    <tr><td>VIP 5</td><td>$1,000.00</td><td>$10.00 / day</td></tr>
+                    <tr><td>VIP 6</td><td>$1,500.00</td><td>$15.00 / day</td></tr>
+                    <tr><td>VIP 7</td><td>$2,000.00</td><td>$20.00 / day</td></tr>
+                    <tr><td>VIP 8</td><td>$2,500.00</td><td>$25.00 / day</td></tr>
+                    <tr><td>VIP 9</td><td>$3,000.00</td><td>$30.00 / day</td></tr>
+                    <tr><td>VIP 10</td><td>$4,000.00</td><td>$40.00 / day</td></tr>
+                    <tr><td>VIP 11</td><td>$5,000.00+</td><td>$50.00 / day</td></tr>
+                </tbody>
+            </table>
+        </div>
+
         <div id="view-announcement" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
             <div class="status-box" style="border-left-color: #1f6feb;">
@@ -398,7 +518,6 @@
         </div>
     </div>
 
-    <!-- Sidebar Drawer -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
         <div class="sidebar">
             <div class="sidebar-header">
@@ -409,13 +528,14 @@
                 <li onclick="switchTab('dashboard')" class="active">📊 Dashboard</li>
                 <li onclick="switchTab('deposit')">💳 Deposit</li>
                 <li onclick="switchTab('withdraw')">💸 Withdraw</li>
+                <li onclick="switchTab('vips')">👑 VIPs Levels</li>
                 <li onclick="switchTab('announcement')">📢 Announcement</li>
+                <li onclick="handleLogout()" style="color: #f85149; margin-top: 20px;">🚪 Logout</li>
             </ul>
         </div>
     </div>
 
-    <!-- Startup Announcement Modal -->
-    <div class="modal-overlay" id="startup-modal">
+    <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
             <p>
@@ -429,8 +549,11 @@
     <script>
         let userData = {
             name: "Anas Khan",
+            email: "",
             balance: 55001.00,
-            taskDone: false
+            taskDone: false,
+            isLoggedIn: false,
+            generatedOTP: null
         };
 
         function calculateVIP(balance) {
@@ -444,68 +567,4 @@
             if (balance >= 800) return { level: "VIP 4", reward: 8.00 };
             if (balance >= 500) return { level: "VIP 3", reward: 5.00 };
             if (balance >= 200) return { level: "VIP 2", reward: 2.00 };
-            if (balance >= 100) return { level: "VIP 1", reward: 1.00 };
-            return { level: "Standard", reward: 1.00 };
-        }
-
-        function updateUI() {
-            const vipInfo = calculateVIP(userData.balance);
-            document.getElementById('balance').innerText = userData.balance.toFixed(2);
-            document.getElementById('user-display-name').innerText = userData.name + ` (${vipInfo.level})`;
-            document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
-            document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
-        }
-
-        function claimTaskReward() {
-            if (userData.taskDone) return;
-            const vipInfo = calculateVIP(userData.balance);
-            userData.balance += vipInfo.reward;
-            userData.taskDone = true;
-            
-            const btn = document.getElementById('task-btn');
-            btn.innerText = "Task Completed Today";
-            btn.disabled = true;
-            
-            updateUI();
-            alert(`Success! $${vipInfo.reward.toFixed(2)} added to your balance.`);
-        }
-
-        function toggleSidebar() {
-            const overlay = document.getElementById('sidebar-overlay');
-            overlay.classList.toggle('active');
-        }
-
-        function closeSidebar(e) {
-            if (e.target.id === 'sidebar-overlay') {
-                document.getElementById('sidebar-overlay').classList.remove('active');
-            }
-        }
-
-        function switchTab(tabName) {
-            const views = ['dashboard', 'deposit', 'withdraw', 'announcement'];
-            views.forEach(view => {
-                document.getElementById(`view-${view}`).classList.add('hidden');
-            });
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-            toggleSidebar();
-        }
-
-        function showAnnouncement() {
-            document.getElementById('startup-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('startup-modal').style.display = 'none';
-        }
-
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-
-        updateUI();
-    </script>
-</body>
-</html>
+            if (balance >= 1
