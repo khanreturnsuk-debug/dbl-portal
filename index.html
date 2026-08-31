@@ -92,11 +92,11 @@
             font-weight: bold;
         }
 
-        /* Wide Banner Responsive Image Slider */
+        /* Fixed Banner Aspect-Ratio Image Slider */
         .slider-container {
             position: relative;
             width: 100%;
-            height: 125px;
+            height: 120px;
             aspect-ratio: 4 / 1;
             border-radius: 12px;
             overflow: hidden;
@@ -109,7 +109,7 @@
             display: flex;
             width: 100%;
             height: 100%;
-            transition: transform 0.4s ease-in-out;
+            transition: transform 0.5s ease-in-out;
         }
 
         .slide {
@@ -120,7 +120,7 @@
         .slide img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: fill;
         }
 
         .slider-btn {
@@ -212,7 +212,7 @@
             line-height: 1.4;
         }
 
-        /* Green Success Message Box */
+        /* Success Message Box */
         .success-box {
             background: rgba(46, 160, 67, 0.15);
             border: 1px solid #2ea043;
@@ -225,7 +225,7 @@
             font-weight: 600;
         }
 
-        /* Security Warning Box */
+        /* Warning Box */
         .warning-box {
             background: rgba(210, 153, 34, 0.15);
             border: 1px solid #d29922;
@@ -244,7 +244,7 @@
             font-size: 13px;
         }
 
-        /* Red Error Message Alert Box */
+        /* Error Box */
         .error-box {
             background: rgba(248, 81, 73, 0.15);
             border: 1px solid #f85149;
@@ -958,7 +958,7 @@
                 slideInterval = setInterval(() => {
                     currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
                     updateSlidePosition();
-                }, 2000); // 2.0 Seconds Timer
+                }, 4000); // Set to 4.0 Seconds Timer
             }
         }
 
