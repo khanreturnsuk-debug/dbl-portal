@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dollar Burst Limited (DBL)</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#121212">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+    .container { background-color: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 25px; width: 100%; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .brand-header { text-align: center; margin-bottom: 20px; }
+    .brand-header h1 { color: #00e676; font-size: 24px; }
+    .brand-header p { color: #aaa; font-size: 12px; }
+    
+    .nav-tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: #2a2a2a; border-radius: 8px; padding: 5px; }
+    .tab-btn { background: none; border: none; color: #aaa; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 6px; }
+    .tab-btn.active { background: #00e676; color: #000; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-size: 13px; color: #bbb; }
+    select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: #2a2a2a; color: #fff; font-size: 14px; outline: none; }
+    
+    .info-box { background-color: #262626; border-left: 4px solid #00e676; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; word-break: break-all; }
+    button.btn-main { width: 100%; padding: 12px; background-color: #00e676; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+    .balance-card { background: linear-gradient(135deg, #00c853, #004d40); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
+    .balance-card h3 { font-size: 28px; margin-top: 5px; }
+    .toggle-link { text-align: center; margin-top: 12px; font-size: 13px; color: #00e676; cursor: pointer; text-decoration: underline; }
+    .row { display: flex; gap: 10px; }
+    .error-msg { color: #ff5252; font-size: 12px; margin-top: 5px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="brand-header">
+      <h1>DBL Portal</h1>
+      <p>Dollar Burst Limited</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs" id="navTabs" style="display: none;">
+      <button class="tab-btn active" onclick="switchTab('dashboard', event)">Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('deposit', event)">Deposit</button>
+      <button class="tab-btn" onclick="switchTab('withdraw', event)">Withdraw</button>
+    </div>
+
+    <!-- 1. LOGIN VIEW -->
+    <div id="loginView" class="view active">
+      <h3 style="text-align: center; margin-bottom: 15px;">Login to DBL</h3>
+      <div class="form-group">
+        <label>Username or Email</label>
+        <input type="text" id="loginIdentifier" placeholder="Enter username or email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password">
+      </div>
+      <button class="btn-main" onclick="handleLogin()">Login</button>
+      <div class="error-msg" id="loginError"></div>
+      <div class="toggle-link" onclick="toggleAuth('register')">Don't have an account? Register Here</div>
+    </div>
+
+    <!-- 2. REGISTER VIEW -->
+    <div id="registerView" class="view">
+      <h3 style="text-align: center; margin-bottom: 15px;">Register DBL Account</h3>
+      <div class="row">
+        <div class="form-group" style="flex:1;">
+          <label>First Name</label>
+          <input type="text" id="regFirstName" placeholder="First Name">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Last Name</label>
+          <input type="text" id="regLastName" placeholder="Last Name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Unique Username</label>
+        <input type="text" id="regUsername" placeholder="Choose unique username">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="regPhone" placeholder="Enter phone number">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Set password">
+      </div>
+      <button class="btn-main" onclick="handleRegister()">Create Account</button>
+      <div class="error-msg" id="regError"></div>
+      <div class="toggle-link" onclick="toggleAuth('login')">Already have an account? Login</div>
+    </div>
+
+    <!-- 3. DASHBOARD VIEW -->
+    <div id="dashboardView" class="view">
+      <div style="margin-bottom: 10px; font-size: 14px;">Welcome, <strong id="userFullName" style="color:#00e676;">User</strong>!</div>
+      <div class="balance-card">
+        <span>Current Balance</span>
+        <h3 id="userBalance">$0.00</h3>
+      </div>
+      <div class="info-box">
+        <strong>Daily Task Status:</strong> Complete daily task to earn $1.00 reward.
+      </div>
+      <button class="btn-main" id="taskBtn" onclick="claimDailyReward()">Claim Daily Task ($1.00)</button>
+      <button style="background:#333; color:#fff; margin-top:15px; border:none; padding:8px; width:100%; border-radius:6px; cursor:pointer;" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- 4. DEPOSIT VIEW -->
+    <div id="depositView" class="view">
+      <div class="form-group">
+        <label>Select Payment Method</label>
+        <select id="paymentMethod" onchange="updatePaymentDetails()">
+          <option value="TRC20">USDT (TRC-20) - Binance</option>
+          <option value="JazzCash">JazzCash</option>
+          <option value="EasyPaisa">EasyPaisa</option>
+        </select>
+      </div>
+      <div class="info-box" id="paymentDetails"></div>
+      <div class="form-group">
+        <label>Deposit Amount ($)</label>
+        <input type="number" id="depositAmount" min="100" value="100">
+      </div>
+      <div class="form-group">
+        <label>Transaction TRX ID</label>
+        <input type="text" id="trxId" placeholder="Enter TRX ID">
+      </div>
+      <button class="btn-main" onclick="submitDeposit()">Submit Deposit</button>
+    </div>
+
+    <!-- 5. WITHDRAW VIEW -->
+    <div id="withdrawView" class="view">
+      <div class="form-group">
+        <label>Withdrawal Method</label>
+        <select id="withdrawMethod">
+          <option value="TRC20">USDT (TRC-20)</option>
+          <option value="JazzCash">JazzCash</option>
+          <option value="EasyPaisa">EasyPaisa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Account Number / Wallet Address</label>
+        <input type="text" id="withdrawAccount" placeholder="Enter Account/Wallet Detail">
+      </div>
+      <div class="form-group">
+        <label>Amount ($)</label>
+        <input type="number" id="withdrawAmount" placeholder="Enter Amount" min="90">
+      </div>
+      <button class="btn-main" onclick="submitWithdraw()">Request Withdrawal</button>
+    </div>
+
+  </div>
+
+  <script>
+    const adminDummy = { 
+      firstName: "Anas", 
+      lastName: "Khan (VIP)", 
+      username: "admin", 
+      email: "admin@dbl.com", 
+      phone: "03000000000", 
+      password: "dbl123", 
+      balance: 55000.00,
+      depositedAmount: 0,
+      taskClaimed: false 
+    };
+
+    let users = JSON.parse(localStorage.getItem('dbl_users')) || [adminDummy];
+    
+    if(!users.some(u => u.username === 'admin')) {
+      users.push(adminDummy);
+      localStorage.setItem('dbl_users', JSON.stringify(users));
+    }
+
+    let currentUser = null;
+
+    const paymentAccounts = {
+      TRC20: { title: "DBL USDT TRC-20 Address", value: "TY3xP9K8mN2vQ5L7R4wS1tU6vX8yZ0aBcD", note: "Send USDT TRC-20." },
+      JazzCash: { title: "DBL JazzCash Account", value: "03001234567 (DBL Merchant)", note: "Paste Ref ID after sending." },
+      EasyPaisa: { title: "DBL EasyPaisa Account", value: "03451234567 (DBL Merchant)", note: "Paste Ref ID after sending." }
+    };
+
+    function toggleAuth(mode) {
+      document.getElementById('loginError').innerText = '';
+      document.getElementById('regError').innerText = '';
+      if(mode === 'register') {
+        document.getElementById('loginView').classList.remove('active');
+        document.getElementById('registerView').classList.add('active');
+      } else {
+        document.getElementById('registerView').classList.remove('active');
+        document.getElementById('loginView').classList.add('active');
+      }
+    }
+
+    function handleRegister() {
+      const fn = document.getElementById('regFirstName').value.trim();
+      const ln = document.getElementById('regLastName').value.trim();
+      const un = document.getElementById('regUsername').value.trim().toLowerCase();
+      const em = document.getElementById('regEmail').value.trim().toLowerCase();
+      const ph = document.getElementById('regPhone').value.trim();
+      const pw = document.getElementById('regPass').value;
+
+      if(!fn || !ln || !un || !em || !ph || !pw) {
+        document.getElementById('regError').innerText = 'Please fill all registration fields!';
+        return;
+      }
+
+      const exists = users.find(u => u.username === un || u.email === em);
+      if(exists) {
+        document.getElementById('regError').innerText = 'Username or Email is already registered!';
+        return;
+      }
+
+      const newUser = { firstName: fn, lastName: ln, username: un, email: em, phone: ph, password: pw, balance: 0.00, depositedAmount: 0, taskClaimed: false };
+      users.push(newUser);
+      localStorage.setItem('dbl_users', JSON.stringify(users));
+
+      alert('Account created successfully! Please login.');
+      toggleAuth('login');
+    }
+
+    function handleLogin() {
+      const id = document.getElementById('loginIdentifier').value.trim().toLowerCase();
+      const pw = document.getElementById('loginPass').value;
+
+      const user = users.find(u => (u.username === id || u.email === id) && u.password === pw);
+
+      if(!user) {
+        document.getElementById('loginError').innerText = 'Invalid username/email or password!';
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('userFullName').innerText = `${user.firstName} ${user.lastName}`;
+      document.getElementById('userBalance').innerText = `$${user.balance.toFixed(2)}`;
+      
+      const taskBtn = document.getElementById('taskBtn');
+      if(user.taskClaimed) {
+        taskBtn.innerText = 'Task Completed Today';
+        taskBtn.style.background = '#555';
+      } else {
+        taskBtn.innerText = 'Claim Daily Task ($1.00)';
+        taskBtn.style.background = '#00e676';
+      }
+
+      document.getElementById('loginView').classList.remove('active');
+      document.getElementById('navTabs').style.display = 'flex';
+      switchTab('dashboard');
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      document.getElementById('navTabs').style.display = 'none';
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('loginView').classList.add('active');
+    }
+
+    function switchTab(tabName, evt) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(tabName + 'View').classList.add('active');
+      if(evt) evt.target.classList.add('active');
+      if(tabName === 'deposit') updatePaymentDetails();
+    }
+
+    function updatePaymentDetails() {
+      const method = document.getElementById('paymentMethod').value;
+      const details = paymentAccounts[method];
+      document.getElementById('paymentDetails').innerHTML = `
+        <p><strong>${details.title}:</strong></p>
+        <p style="margin:4px 0;">${details.value}</p>
+        <small style="color:#aaa;">${details.note}</small>
+      `;
+    }
+
+    function claimDailyReward() {
+      if(!currentUser) return;
+
+      if (currentUser.balance < 100 && currentUser.username !== 'admin') {
+        alert("Welcome to DBL family! 💖 To start claiming your daily rewards, please make a minimum deposit of $100 first. Happy Earning!");
+        return;
+      }
+
+      if (currentUser.taskClaimed) { 
+        alert('Today task already claimed!'); 
+        return; 
+      }
+      
+      currentUser.balance += 1.00;
+      currentUser.taskClaimed = true;
+      
+      const idx = users.findIndex(u => u.username === currentUser.username);
+      if(idx !== -1) users[idx] = currentUser;
+      localStorage.setItem('dbl_users', JSON.stringify(users));
+
+      document.getElementById('userBalance').innerText = '$' + currentUser.balance.toFixed(2);
+      document.getElementById('taskBtn').innerText = 'Task Completed Today';
+      document.getElementById('taskBtn').style.background = '#555';
+    }
+
+    function submitDeposit() {
+      const amt = parseFloat(document.getElementById('depositAmount').value);
+      const trx = document.getElementById('trxId').value.trim();
+      
+      if (!amt || amt < 100) { 
+        alert('Minimum deposit amount is $100. Smaller amounts are not accepted.'); 
+        return; 
+      }
+      
+      if (!trx) { 
+        alert('Please enter a valid Transaction TRX ID!'); 
+        return; 
+      }
+      
+      alert('Deposit request submitted! Admin will verify your transaction shortly.');
+      document.getElementById('trxId').value = '';
+    }
+
+    function submitWithdraw() {
+      const acc = document.getElementById('withdrawAccount').value.trim();
+      const reqAmt = parseFloat(document.getElementById('withdrawAmount').value);
+      
+      if (!acc || !reqAmt) { 
+        alert('Please fill all withdrawal details!'); 
+        return; 
+      }
+
+      if (reqAmt < 90) {
+        alert('Minimum withdrawal amount is $90.');
+        return;
+      }
+
+      // Calculate profit balance excluding locked deposit amount (except admin)
+      const lockedDeposit = currentUser.depositedAmount || 100;
+      const profitBalance = currentUser.username === 'admin' ? currentUser.balance : (currentUser.balance - lockedDeposit);
+
+      if (profitBalance < 90 || reqAmt > profitBalance) {
+        alert(`Withdrawal failed! Your initial deposit ($100) is locked. You can only withdraw your earned profits once they reach a minimum of $90.`);
+        return;
+      }
+
+      alert('Withdrawal request submitted successfully!');
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
+    }
+  </script>
+
+</body>
+</html>
