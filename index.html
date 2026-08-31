@@ -784,9 +784,9 @@
         <!-- Announcement View -->
         <div id="view-announcement" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
-            <div class="status-box" style="border-left-color: #1f6feb;">
+            <div class="status-box" style="border-left-color: #1f6feb;" id="dynamic-announcement-container">
                 <h3 style="color: #ffffff; margin-bottom: 8px;">Welcome to DBL Portal!</h3>
-                <p style="color: #c9d1d9; font-size: 14px; line-height: 1.6;">
+                <p style="color: #c9d1d9; font-size: 14px; line-height: 1.6;" id="announcement-text-content">
                     Hi dear users! How are you all?<br><br>
                     Welcome to <strong>DBL Portal (Dollar Burst Limited)</strong>. This is a 100% trusted and long-term investment platform. May Allah bless you all with great success, happiness, and continuous financial growth!
                 </p>
@@ -816,7 +816,7 @@
     <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
-            <p>
+            <p id="modal-announcement-text">
                 Hi dear users! How are you all?<br><br>
                 Welcome to <strong>Dollar Burst Limited (DBL)</strong>! This is a 100% trusted and long-term investment platform. May Allah bless you all with success, happiness, and continuous earnings!
             </p>
@@ -1065,6 +1065,7 @@
 
             updateUI();
             startSlideTimer(); // Start slider on login
+            fetchLatestAnnouncement(); // Fetch dynamic announcement from server
             showAnnouncement();
         }
 
@@ -1121,6 +1122,31 @@
         function closeModal() {
             document.getElementById('startup-modal').classList.hidden = true;
             document.getElementById('startup-modal').classList.add('hidden');
+        }
+
+        // Fetch Dynamic Announcement from Server API
+        async function fetchLatestAnnouncement() {
+            try {
+                const response = await fetch('/api/announcements');
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const latest = data[data.length - 1]; // Get latest news item
+                    
+                    // Update announcement view tab text
+                    const textContainer = document.getElementById('announcement-text-content');
+                    if (textContainer) {
+                        textContainer.innerHTML = latest.text.replace(/\n/g, '<br>');
+                    }
+
+                    // Update startup popup modal text
+                    const modalText = document.getElementById('modal-announcement-text');
+                    if (modalText) {
+                        modalText.innerHTML = latest.text.replace(/\n/g, '<br>');
+                    }
+                }
+            } catch (err) {
+                console.error("Could not fetch announcements:", err);
+            }
         }
     </script>
 </body>
