@@ -166,6 +166,56 @@
             font-weight: 600;
         }
 
+        /* VIP Card Layouts */
+        .vip-card-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .vip-level-card {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .vip-level-card:hover {
+            border-color: #2ea043;
+            transform: translateY(-2px);
+        }
+
+        .vip-info-left h4 {
+            color: #2ea043;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .vip-info-left p {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .vip-info-right {
+            text-align: right;
+        }
+
+        .vip-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .vip-reward {
+            font-size: 12px;
+            color: #1f6feb;
+            font-weight: 600;
+        }
+
         /* Input & Buttons */
         .form-group {
             margin-bottom: 16px;
@@ -461,6 +511,126 @@
             <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
 
+        <!-- VIP Levels View -->
+        <div id="view-vips" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">VIP Investment Levels</h2>
+            <div class="status-box" style="margin-bottom: 15px;">
+                Maintain the required balance to automatically upgrade your VIP tier and claim higher daily rewards!
+            </div>
+            
+            <div class="vip-card-grid">
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 1 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$100.00</div>
+                        <div class="vip-reward">+$1.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 2 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$200.00</div>
+                        <div class="vip-reward">+$2.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 3 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$500.00</div>
+                        <div class="vip-reward">+$5.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 4 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$800.00</div>
+                        <div class="vip-reward">+$8.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 5 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$1,000.00</div>
+                        <div class="vip-reward">+$10.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 6 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$1,500.00</div>
+                        <div class="vip-reward">+$15.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 7 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$2,000.00</div>
+                        <div class="vip-reward">+$20.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 8 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$2,500.00</div>
+                        <div class="vip-reward">+$25.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 9 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$3,000.00</div>
+                        <div class="vip-reward">+$30.00 / Daily</div>
+                    </div>
+                </div>
+
+                <div class="vip-level-card">
+                    <div class="vip-info-left">
+                        <h4>VIP 10 Level</h4>
+                        <p>Required Balance</p>
+                    </div>
+                    <div class="vip-info-right">
+                        <div class="vip-price">$4,000.00</div>
+                        <div class="vip-reward">+$40.00 / Daily</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit USDT</h2>
@@ -521,6 +691,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li onclick="switchTab('dashboard')" class="active">📊 Dashboard</li>
+                <li onclick="switchTab('vips')">👑 VIP Levels</li>
                 <li onclick="switchTab('deposit')">💳 Deposit</li>
                 <li onclick="switchTab('withdraw')">💸 Withdraw</li>
                 <li onclick="switchTab('announcement')">📢 Announcement</li>
@@ -743,7 +914,7 @@
         }
 
         function switchTab(tabName) {
-            const views = ['dashboard', 'deposit', 'withdraw', 'announcement'];
+            const views = ['dashboard', 'vips', 'deposit', 'withdraw', 'announcement'];
             views.forEach(view => {
                 document.getElementById(`view-${view}`).classList.add('hidden');
             });
