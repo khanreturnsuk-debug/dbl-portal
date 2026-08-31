@@ -134,6 +134,19 @@
             line-height: 1.4;
         }
 
+        /* Green Success Message Box */
+        .success-box {
+            background: rgba(46, 160, 67, 0.15);
+            border: 1px solid #2ea043;
+            color: #3fb950;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Security Warning Box */
         .warning-box {
             background: rgba(210, 153, 34, 0.15);
@@ -442,6 +455,7 @@
             <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Create Account</h2>
             
             <div id="reg-error" class="error-box hidden"></div>
+            <div id="reg-success" class="success-box hidden"></div>
 
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
@@ -738,6 +752,18 @@
             errBox.classList.add('hidden');
         }
 
+        function showSuccess(elementId, msg) {
+            const succBox = document.getElementById(elementId);
+            succBox.innerText = msg;
+            succBox.classList.remove('hidden');
+        }
+
+        function clearSuccess(elementId) {
+            const succBox = document.getElementById(elementId);
+            succBox.innerText = '';
+            succBox.classList.add('hidden');
+        }
+
         function generateUsername() {
             const fn = document.getElementById('reg-fname').value.trim().toLowerCase().replace(/\s+/g, '');
             const ln = document.getElementById('reg-lname').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -751,13 +777,23 @@
 
         function sendOTP() {
             clearError('reg-error');
+            clearSuccess('reg-success');
+
             const email = document.getElementById('reg-email').value.trim();
+
             if (!email || !email.includes('@')) {
                 showError('reg-error', '⚠️ Please enter a valid email address first!');
                 return;
             }
+
+            // Generate 6-digit OTP Code
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            alert(`[Verification Demo Code]: Your OTP verification code is ${generatedOTP}`);
+
+            // Auto-fill OTP field for easy user testing
+            document.getElementById('reg-otp').value = generatedOTP;
+
+            // Display Green Success Box in English
+            showSuccess('reg-success', `✔️ Verification Code [ ${generatedOTP} ] has been generated successfully!`);
         }
 
         function calculateVIP(balance) {
@@ -787,6 +823,7 @@
         function switchAuthView(view) {
             clearError('login-error');
             clearError('reg-error');
+            clearSuccess('reg-success');
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-register').classList.add('hidden');
             document.getElementById(`view-${view}`).classList.remove('hidden');
@@ -794,6 +831,8 @@
 
         function handleRegister() {
             clearError('reg-error');
+            clearSuccess('reg-success');
+
             const fname = document.getElementById('reg-fname').value.trim();
             const lname = document.getElementById('reg-lname').value.trim();
             const username = document.getElementById('reg-username').value.trim();
