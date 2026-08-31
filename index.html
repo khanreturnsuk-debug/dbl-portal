@@ -1120,32 +1120,32 @@
         }
 
         function closeModal() {
-            document.getElementById('startup-modal').classList.hidden = true;
             document.getElementById('startup-modal').classList.add('hidden');
         }
 
-        // Fetch Dynamic Announcement from Server API
+        // Fetch Dynamic Announcement from Server API with Fallback
         async function fetchLatestAnnouncement() {
             try {
                 const response = await fetch('/api/announcements');
                 const data = await response.json();
                 if (data && data.length > 0) {
                     const latest = data[data.length - 1]; // Get latest news item
+                    const formattedText = latest.text.replace(/\n/g, '<br>');
                     
                     // Update announcement view tab text
                     const textContainer = document.getElementById('announcement-text-content');
                     if (textContainer) {
-                        textContainer.innerHTML = latest.text.replace(/\n/g, '<br>');
+                        textContainer.innerHTML = formattedText;
                     }
 
                     // Update startup popup modal text
                     const modalText = document.getElementById('modal-announcement-text');
                     if (modalText) {
-                        modalText.innerHTML = latest.text.replace(/\n/g, '<br>');
+                        modalText.innerHTML = formattedText;
                     }
                 }
             } catch (err) {
-                console.error("Could not fetch announcements:", err);
+                console.warn("API offline, keeping default announcement text.", err);
             }
         }
     </script>
