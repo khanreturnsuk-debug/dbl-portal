@@ -134,6 +134,25 @@
             line-height: 1.4;
         }
 
+        /* Security Warning Box */
+        .warning-box {
+            background: rgba(210, 153, 34, 0.15);
+            border: 1px solid #d29922;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            color: #e3b341;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #f0883e;
+            font-size: 13px;
+        }
+
         /* Input & Buttons */
         .form-group {
             margin-bottom: 16px;
@@ -325,7 +344,6 @@
 <body>
 
     <div class="app-container">
-        <!-- Top Navigation Header -->
         <div class="header-bar">
             <button class="menu-btn hidden" id="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
@@ -335,12 +353,11 @@
             <div style="width: 24px;"></div>
         </div>
 
-        <!-- Login View -->
         <div id="view-login" class="view-content">
             <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Sign In</h2>
             <div class="form-group">
                 <label>Username / Email</label>
-                <input type="text" id="login-username" class="form-control" placeholder="Enter username (e.g. Anas Khan)">
+                <input type="text" id="login-username" class="form-control" placeholder="Enter username or email">
             </div>
             <div class="form-group">
                 <label>Password</label>
@@ -352,46 +369,76 @@
             </div>
         </div>
 
-        <!-- Register View -->
         <div id="view-register" class="view-content hidden">
             <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Create Account</h2>
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="reg-name" class="form-control" placeholder="Enter your full name">
+            
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>First Name</label>
+                    <input type="text" id="reg-fname" class="form-control" placeholder="First Name" oninput="generateUsername()">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Last Name</label>
+                    <input type="text" id="reg-lname" class="form-control" placeholder="Last Name" oninput="generateUsername()">
+                </div>
             </div>
+
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="reg-username" class="form-control" placeholder="Choose a username">
+                <label>System Generated Unique Username</label>
+                <input type="text" id="reg-username" class="form-control" placeholder="Auto generated username" readonly style="background: #21262d; color: #2ea043; font-weight: bold;">
             </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="email" id="reg-email" class="form-control" placeholder="Enter email address">
+                    <button type="button" class="btn-action" style="width: auto; padding: 0 12px; white-space: nowrap; font-size: 12px; margin-bottom:0;" onclick="sendOTP()">Send OTP</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Verification Code (OTP)</label>
+                <input type="text" id="reg-otp" class="form-control" placeholder="Enter 6-digit OTP code">
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Security Warning</strong>
+                Please set your password carefully. Once registered, password modification or reset requests will strictly require administrative approval.
+            </div>
+
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" id="reg-password" class="form-control" placeholder="Create password">
             </div>
-            <button class="btn-action" onclick="handleRegister()">Register</button>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="reg-cpassword" class="form-control" placeholder="Confirm password">
+            </div>
+
+            <button class="btn-action" onclick="handleRegister()">Register Account</button>
             <div class="auth-toggle">
                 Already have an account? <a href="#" onclick="switchAuthView('login')">Login</a>
             </div>
         </div>
 
-        <!-- Dashboard View -->
         <div id="view-dashboard" class="view-content hidden">
             <div class="welcome-text">Welcome, <span id="user-display-name">Anas Khan</span>!</div>
             
             <div class="balance-card">
                 <div class="balance-title">Current Balance</div>
-                <div class="balance-amount">$<span id="balance">55001.00</span></div>
-                <div class="vip-badge" id="vip-level-badge">VIP 11 Tier</div>
+                <div class="balance-amount">$<span id="balance">100.00</span></div>
+                <div class="vip-badge" id="vip-level-badge">VIP 1 Tier</div>
             </div>
 
             <div class="status-box">
-                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">50.00</span> reward.
+                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">1.00</span> reward.
             </div>
 
             <button class="btn-action" id="task-btn" onclick="claimTaskReward()">Complete Daily Task</button>
             <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
 
-        <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit USDT</h2>
             <div class="status-box">
@@ -408,7 +455,6 @@
             <div class="qr-placeholder">USDT QR CODE</div>
         </div>
 
-        <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
             <div class="form-group">
@@ -429,7 +475,6 @@
             <button class="btn-action" onclick="alert('Withdrawal request submitted successfully!')">Request Withdrawal</button>
         </div>
 
-        <!-- Announcement View -->
         <div id="view-announcement" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
             <div class="status-box" style="border-left-color: #1f6feb;">
@@ -442,7 +487,6 @@
         </div>
     </div>
 
-    <!-- Sidebar Drawer -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
         <div class="sidebar">
             <div class="sidebar-header">
@@ -459,7 +503,6 @@
         </div>
     </div>
 
-    <!-- Startup Announcement Modal -->
     <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
@@ -472,11 +515,39 @@
     </div>
 
     <script>
-        let userData = {
-            name: "Anas Khan",
-            balance: 55001.00,
-            taskDone: false
-        };
+        let generatedOTP = null;
+        let currentUser = null;
+
+        function getAccounts() {
+            return JSON.parse(localStorage.getItem('dbl_users') || '{}');
+        }
+
+        function saveAccount(username, accountData) {
+            const users = getAccounts();
+            users[username.toLowerCase()] = accountData;
+            localStorage.setItem('dbl_users', JSON.stringify(users));
+        }
+
+        function generateUsername() {
+            const fn = document.getElementById('reg-fname').value.trim().toLowerCase().replace(/\s+/g, '');
+            const ln = document.getElementById('reg-lname').value.trim().toLowerCase().replace(/\s+/g, '');
+            if (fn || ln) {
+                const randomNum = Math.floor(1000 + Math.random() * 9000);
+                document.getElementById('reg-username').value = `${fn}${ln}_${randomNum}`;
+            } else {
+                document.getElementById('reg-username').value = '';
+            }
+        }
+
+        function sendOTP() {
+            const email = document.getElementById('reg-email').value.trim();
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address first!');
+                return;
+            }
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`[Verification Demo Code]: Your OTP verification code is ${generatedOTP}`);
+        }
 
         function calculateVIP(balance) {
             if (balance >= 5000) return { level: "VIP 11", reward: 50.00 };
@@ -494,9 +565,10 @@
         }
 
         function updateUI() {
-            const vipInfo = calculateVIP(userData.balance);
-            document.getElementById('balance').innerText = userData.balance.toFixed(2);
-            document.getElementById('user-display-name').innerText = userData.name + ` (${vipInfo.level})`;
+            if (!currentUser) return;
+            const vipInfo = calculateVIP(currentUser.balance);
+            document.getElementById('balance').innerText = currentUser.balance.toFixed(2);
+            document.getElementById('user-display-name').innerText = currentUser.fullName + ` (${vipInfo.level})`;
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
         }
@@ -507,42 +579,81 @@
             document.getElementById(`view-${view}`).classList.remove('hidden');
         }
 
-        function handleLogin() {
-            const userInput = document.getElementById('login-username').value.trim();
-            
-            if (userInput.toLowerCase() === "anas khan" || userInput.toLowerCase() === "admin" || userInput === "") {
-                userData.name = "Anas Khan (VIP)";
-                userData.balance = 55001.00;
-            } else {
-                userData.name = userInput;
-                userData.balance = 100.00; // Normal User starting balance
+        function handleRegister() {
+            const fname = document.getElementById('reg-fname').value.trim();
+            const lname = document.getElementById('reg-lname').value.trim();
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const otp = document.getElementById('reg-otp').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const cpassword = document.getElementById('reg-cpassword').value;
+
+            if (!fname || !lname || !email) {
+                alert('Please fill out all required fields.');
+                return;
             }
-            
+            if (!generatedOTP || otp !== generatedOTP) {
+                alert('Invalid or unverified OTP code!');
+                return;
+            }
+            if (!password || password !== cpassword) {
+                alert('Passwords do not match or are empty!');
+                return;
+            }
+
+            const fullName = `${fname} ${lname}`;
+            const newUser = {
+                fullName: fullName,
+                username: username,
+                email: email,
+                password: password,
+                balance: 100.00,
+                taskDone: false
+            };
+
+            saveAccount(username, newUser);
+            saveAccount(email, newUser);
+
+            alert(`Account registered successfully!\nYour Username is: ${username}\nPlease Login now.`);
+            switchAuthView('login');
+        }
+
+        function handleLogin() {
+            const input = document.getElementById('login-username').value.trim().toLowerCase();
+            const pass = document.getElementById('login-password').value;
+
+            // Admin Master Override
+            if (input === "anas khan" || input === "admin") {
+                currentUser = {
+                    fullName: "Anas Khan",
+                    balance: 55001.00,
+                    taskDone: false
+                };
+            } else {
+                const users = getAccounts();
+                const matchedUser = users[input];
+
+                if (!matchedUser) {
+                    alert('No account found with this username/email! Please register first.');
+                    return;
+                }
+                if (matchedUser.password !== pass) {
+                    alert('Incorrect password! Please try again.');
+                    return;
+                }
+                currentUser = matchedUser;
+            }
+
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('menu-toggle-btn').classList.remove('hidden');
-            
-            updateUI();
-            showAnnouncement();
-        }
 
-        function handleRegister() {
-            const nameInput = document.getElementById('reg-name').value.trim();
-            if (nameInput) {
-                userData.name = nameInput;
-                userData.balance = 100.00;
-            }
-            alert('Registration Successful! Logging in...');
-            
-            document.getElementById('view-register').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('menu-toggle-btn').classList.remove('hidden');
-            
             updateUI();
             showAnnouncement();
         }
 
         function handleLogout() {
+            currentUser = null;
             toggleSidebar();
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
             document.getElementById('view-login').classList.remove('hidden');
@@ -550,15 +661,15 @@
         }
 
         function claimTaskReward() {
-            if (userData.taskDone) return;
-            const vipInfo = calculateVIP(userData.balance);
-            userData.balance += vipInfo.reward;
-            userData.taskDone = true;
-            
+            if (!currentUser || currentUser.taskDone) return;
+            const vipInfo = calculateVIP(currentUser.balance);
+            currentUser.balance += vipInfo.reward;
+            currentUser.taskDone = true;
+
             const btn = document.getElementById('task-btn');
             btn.innerText = "Task Completed Today";
             btn.disabled = true;
-            
+
             updateUI();
             alert(`Success! $${vipInfo.reward.toFixed(2)} added to your balance.`);
         }
@@ -580,7 +691,7 @@
                 document.getElementById(`view-${view}`).classList.add('hidden');
             });
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            
+
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
             toggleSidebar();
         }
