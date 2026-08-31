@@ -153,6 +153,19 @@
             font-size: 13px;
         }
 
+        /* Red Error Message Alert Box */
+        .error-box {
+            background: rgba(248, 81, 73, 0.15);
+            border: 1px solid #f85149;
+            color: #ff7b72;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Input & Buttons */
         .form-group {
             margin-bottom: 16px;
@@ -344,6 +357,7 @@
 <body>
 
     <div class="app-container">
+        <!-- Top Navigation Header -->
         <div class="header-bar">
             <button class="menu-btn hidden" id="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
@@ -353,8 +367,12 @@
             <div style="width: 24px;"></div>
         </div>
 
+        <!-- Login View -->
         <div id="view-login" class="view-content">
             <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Sign In</h2>
+            
+            <div id="login-error" class="error-box hidden"></div>
+
             <div class="form-group">
                 <label>Username / Email</label>
                 <input type="text" id="login-username" class="form-control" placeholder="Enter username or email">
@@ -369,9 +387,12 @@
             </div>
         </div>
 
+        <!-- Register View -->
         <div id="view-register" class="view-content hidden">
             <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Create Account</h2>
             
+            <div id="reg-error" class="error-box hidden"></div>
+
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label>First Name</label>
@@ -422,6 +443,7 @@
             </div>
         </div>
 
+        <!-- Dashboard View -->
         <div id="view-dashboard" class="view-content hidden">
             <div class="welcome-text">Welcome, <span id="user-display-name">Anas Khan</span>!</div>
             
@@ -439,6 +461,7 @@
             <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
 
+        <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit USDT</h2>
             <div class="status-box">
@@ -455,6 +478,7 @@
             <div class="qr-placeholder">USDT QR CODE</div>
         </div>
 
+        <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
             <div class="form-group">
@@ -475,6 +499,7 @@
             <button class="btn-action" onclick="alert('Withdrawal request submitted successfully!')">Request Withdrawal</button>
         </div>
 
+        <!-- Announcement View -->
         <div id="view-announcement" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
             <div class="status-box" style="border-left-color: #1f6feb;">
@@ -487,6 +512,7 @@
         </div>
     </div>
 
+    <!-- Sidebar Drawer -->
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
         <div class="sidebar">
             <div class="sidebar-header">
@@ -503,6 +529,7 @@
         </div>
     </div>
 
+    <!-- Startup Announcement Modal -->
     <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
@@ -528,6 +555,18 @@
             localStorage.setItem('dbl_users', JSON.stringify(users));
         }
 
+        function showError(elementId, msg) {
+            const errBox = document.getElementById(elementId);
+            errBox.innerText = msg;
+            errBox.classList.remove('hidden');
+        }
+
+        function clearError(elementId) {
+            const errBox = document.getElementById(elementId);
+            errBox.innerText = '';
+            errBox.classList.add('hidden');
+        }
+
         function generateUsername() {
             const fn = document.getElementById('reg-fname').value.trim().toLowerCase().replace(/\s+/g, '');
             const ln = document.getElementById('reg-lname').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -540,9 +579,10 @@
         }
 
         function sendOTP() {
+            clearError('reg-error');
             const email = document.getElementById('reg-email').value.trim();
             if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address first!');
+                showError('reg-error', '⚠️ Please enter a valid email address first!');
                 return;
             }
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
@@ -574,12 +614,15 @@
         }
 
         function switchAuthView(view) {
+            clearError('login-error');
+            clearError('reg-error');
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-register').classList.add('hidden');
             document.getElementById(`view-${view}`).classList.remove('hidden');
         }
 
         function handleRegister() {
+            clearError('reg-error');
             const fname = document.getElementById('reg-fname').value.trim();
             const lname = document.getElementById('reg-lname').value.trim();
             const username = document.getElementById('reg-username').value.trim();
@@ -589,15 +632,19 @@
             const cpassword = document.getElementById('reg-cpassword').value;
 
             if (!fname || !lname || !email) {
-                alert('Please fill out all required fields.');
+                showError('reg-error', '⚠️ Please fill out all required fields.');
                 return;
             }
             if (!generatedOTP || otp !== generatedOTP) {
-                alert('Invalid or unverified OTP code!');
+                showError('reg-error', '⚠️ Invalid or unverified OTP code!');
                 return;
             }
-            if (!password || password !== cpassword) {
-                alert('Passwords do not match or are empty!');
+            if (!password || password.length < 4) {
+                showError('reg-error', '⚠️ Password must be at least 4 characters long.');
+                return;
+            }
+            if (password !== cpassword) {
+                showError('reg-error', '⚠️ Passwords do not match!');
                 return;
             }
 
@@ -619,11 +666,21 @@
         }
 
         function handleLogin() {
+            clearError('login-error');
             const input = document.getElementById('login-username').value.trim().toLowerCase();
             const pass = document.getElementById('login-password').value;
 
-            // Admin Master Override
+            if (!input || !pass) {
+                showError('login-error', '⚠️ Please enter both Username/Email and Password.');
+                return;
+            }
+
+            // Admin Master Password Validation
             if (input === "anas khan" || input === "admin") {
+                if (pass !== "admin123" && pass !== "123456" && pass !== "anas") {
+                    showError('login-error', '❌ Invalid Password! Please enter correct password.');
+                    return;
+                }
                 currentUser = {
                     fullName: "Anas Khan",
                     balance: 55001.00,
@@ -634,11 +691,11 @@
                 const matchedUser = users[input];
 
                 if (!matchedUser) {
-                    alert('No account found with this username/email! Please register first.');
+                    showError('login-error', '❌ No account found! Please register first.');
                     return;
                 }
                 if (matchedUser.password !== pass) {
-                    alert('Incorrect password! Please try again.');
+                    showError('login-error', '❌ Invalid Password! Password does not match.');
                     return;
                 }
                 currentUser = matchedUser;
