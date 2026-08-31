@@ -1,359 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dollar Burst Limited (DBL)</title>
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#121212">
-  
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background-color: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-    .container { background-color: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 25px; width: 100%; max-width: 420px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    .brand-header { text-align: center; margin-bottom: 20px; }
-    .brand-header h1 { color: #00e676; font-size: 24px; }
-    .brand-header p { color: #aaa; font-size: 12px; }
-    
-    .nav-tabs { display: flex; justify-content: space-around; margin-bottom: 20px; background: #2a2a2a; border-radius: 8px; padding: 5px; }
-    .tab-btn { background: none; border: none; color: #aaa; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 6px; }
-    .tab-btn.active { background: #00e676; color: #000; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBL Portal - Dollar Burst Limited</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d1117">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    .view { display: none; }
-    .view.active { display: block; }
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 15px;
+        }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; font-size: 13px; color: #bbb; }
-    select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background-color: #2a2a2a; color: #fff; font-size: 14px; outline: none; }
-    
-    .info-box { background-color: #262626; border-left: 4px solid #00e676; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; word-break: break-all; }
-    button.btn-main { width: 100%; padding: 12px; background-color: #00e676; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-    .balance-card { background: linear-gradient(135deg, #00c853, #004d40); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
-    .balance-card h3 { font-size: 28px; margin-top: 5px; }
-    .toggle-link { text-align: center; margin-top: 12px; font-size: 13px; color: #00e676; cursor: pointer; text-decoration: underline; }
-    .row { display: flex; gap: 10px; }
-    .error-msg { color: #ff5252; font-size: 12px; margin-top: 5px; text-align: center; }
-  </style>
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            background: #161b22;
+            border-radius: 16px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header Bar */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #21262d;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .header-title {
+            text-align: center;
+        }
+
+        .header-title h1 {
+            color: #2ea043;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-title span {
+            font-size: 11px;
+            color: #8b949e;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .menu-btn:active {
+            background: #30363d;
+        }
+
+        /* Views */
+        .view-content {
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* User Card */
+        .welcome-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #c9d1d9;
+        }
+
+        .welcome-text span {
+            color: #2ea043;
+            font-weight: bold;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #1f6feb 0%, #2ea043 100%);
+            border-radius: 12px;
+            padding: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(46, 160, 67, 0.2);
+        }
+
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .vip-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* Status Box */
+        .status-box {
+            background: #21262d;
+            border-left: 4px solid #2ea043;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #8b949e;
+            line-height: 1.4;
+        }
+
+        .status-box strong {
+            color: #f0f6fc;
+        }
+
+        /* Input & Buttons */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2ea043;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            background: #2ea043;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-action:disabled {
+            background: #30363d;
+            color: #8b949e;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #21262d;
+            border: 1px solid #30363d;
+        }
+
+        /* Sidebar Overlay Drawer */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-start;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            padding: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-overlay.active .sidebar {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #c9d1d9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background: #21262d;
+            color: #2ea043;
+            font-weight: 600;
+        }
+
+        /* Announcement Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal-card h2 {
+            color: #2ea043;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .modal-card p {
+            color: #c9d1d9;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .qr-placeholder {
+            width: 160px;
+            height: 160px;
+            background: #ffffff;
+            margin: 15px auto;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="brand-header">
-      <h1>DBL Portal</h1>
-      <p>Dollar Burst Limited</p>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs" id="navTabs" style="display: none;">
-      <button class="tab-btn active" onclick="switchTab('dashboard', event)">Dashboard</button>
-      <button class="tab-btn" onclick="switchTab('deposit', event)">Deposit</button>
-      <button class="tab-btn" onclick="switchTab('withdraw', event)">Withdraw</button>
-    </div>
-
-    <!-- 1. LOGIN VIEW -->
-    <div id="loginView" class="view active">
-      <h3 style="text-align: center; margin-bottom: 15px;">Login to DBL</h3>
-      <div class="form-group">
-        <label>Username or Email</label>
-        <input type="text" id="loginIdentifier" placeholder="Enter username or email">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPass" placeholder="Enter password">
-      </div>
-      <button class="btn-main" onclick="handleLogin()">Login</button>
-      <div class="error-msg" id="loginError"></div>
-      <div class="toggle-link" onclick="toggleAuth('register')">Don't have an account? Register Here</div>
-    </div>
-
-    <!-- 2. REGISTER VIEW -->
-    <div id="registerView" class="view">
-      <h3 style="text-align: center; margin-bottom: 15px;">Register DBL Account</h3>
-      <div class="row">
-        <div class="form-group" style="flex:1;">
-          <label>First Name</label>
-          <input type="text" id="regFirstName" placeholder="First Name">
+    <div class="app-container">
+        <!-- Top Navigation Header -->
+        <div class="header-bar">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div class="header-title">
+                <h1>DBL Portal</h1>
+                <span>Dollar Burst Limited</span>
+            </div>
+            <div style="width: 24px;"></div>
         </div>
-        <div class="form-group" style="flex:1;">
-          <label>Last Name</label>
-          <input type="text" id="regLastName" placeholder="Last Name">
+
+        <!-- Dashboard View -->
+        <div id="view-dashboard" class="view-content">
+            <div class="welcome-text">Welcome, <span id="user-display-name">Anas Khan</span>!</div>
+            
+            <div class="balance-card">
+                <div class="balance-title">Current Balance</div>
+                <div class="balance-amount">$<span id="balance">55001.00</span></div>
+                <div class="vip-badge" id="vip-level-badge">VIP 11 Tier</div>
+            </div>
+
+            <div class="status-box">
+                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">50.00</span> reward.
+            </div>
+
+            <button class="btn-action" id="task-btn" onclick="claimTaskReward()">Complete Daily Task</button>
+            <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
-      </div>
-      <div class="form-group">
-        <label>Unique Username</label>
-        <input type="text" id="regUsername" placeholder="Choose unique username">
-      </div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="regEmail" placeholder="Enter your email">
-      </div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="regPhone" placeholder="Enter phone number">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="regPass" placeholder="Set password">
-      </div>
-      <button class="btn-main" onclick="handleRegister()">Create Account</button>
-      <div class="error-msg" id="regError"></div>
-      <div class="toggle-link" onclick="toggleAuth('login')">Already have an account? Login</div>
+
+        <!-- Deposit View -->
+        <div id="view-deposit" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit USDT</h2>
+            <div class="status-box">
+                Send USDT (TRC-20) to the official address below. Deposit will reflect automatically after confirmation.
+            </div>
+            <div class="form-group">
+                <label>Deposit Network</label>
+                <input type="text" class="form-control" value="USDT (TRC-20)" readonly>
+            </div>
+            <div class="form-group">
+                <label>Wallet Address</label>
+                <input type="text" class="form-control" value="TDBL99X4kLp2M9zV1a8R7yQ5eWsT3uN6" readonly>
+            </div>
+            <div class="qr-placeholder">USDT QR CODE</div>
+        </div>
+
+        <!-- Withdraw View -->
+        <div id="view-withdraw" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
+            <div class="form-group">
+                <label>Withdrawal Method</label>
+                <select class="form-control">
+                    <option>USDT (TRC-20)</option>
+                    <option>BEP-20 (USDT)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account Number / Wallet Address</label>
+                <input type="text" class="form-control" placeholder="Enter Account/Wallet Detail">
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" class="form-control" placeholder="Enter Amount">
+            </div>
+            <button class="btn-action" onclick="alert('Withdrawal request submitted successfully!')">Request Withdrawal</button>
+        </div>
+
+        <!-- Announcement View -->
+        <div id="view-announcement" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
+            <div class="status-box" style="border-left-color: #1f6feb;">
+                <h3 style="color: #ffffff; margin-bottom: 8px;">Welcome to DBL Portal!</h3>
+                <p style="color: #c9d1d9; font-size: 14px; line-height: 1.6;">
+                    Hi dear users! How are you all?<br><br>
+                    Welcome to <strong>DBL Portal (Dollar Burst Limited)</strong>. This is a 100% trusted and long-term investment platform. May Allah bless you all with great success, happiness, and continuous financial growth!
+                </p>
+            </div>
+        </div>
     </div>
 
-    <!-- 3. DASHBOARD VIEW -->
-    <div id="dashboardView" class="view">
-      <div style="margin-bottom: 10px; font-size: 14px;">Welcome, <strong id="userFullName" style="color:#00e676;">User</strong>!</div>
-      <div class="balance-card">
-        <span>Current Balance</span>
-        <h3 id="userBalance">$0.00</h3>
-      </div>
-      <div class="info-box">
-        <strong>Daily Task Status:</strong> Complete daily task to earn $1.00 reward.
-      </div>
-      <button class="btn-main" id="taskBtn" onclick="claimDailyReward()">Claim Daily Task ($1.00)</button>
-      <button style="background:#333; color:#fff; margin-top:15px; border:none; padding:8px; width:100%; border-radius:6px; cursor:pointer;" onclick="handleLogout()">Logout</button>
+    <!-- Sidebar Drawer -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3 style="color: #2ea043;">Menu</h3>
+                <button class="menu-btn" onclick="toggleSidebar()">✕</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li onclick="switchTab('dashboard')" class="active">📊 Dashboard</li>
+                <li onclick="switchTab('deposit')">💳 Deposit</li>
+                <li onclick="switchTab('withdraw')">💸 Withdraw</li>
+                <li onclick="switchTab('announcement')">📢 Announcement</li>
+            </ul>
+        </div>
     </div>
 
-    <!-- 4. DEPOSIT VIEW -->
-    <div id="depositView" class="view">
-      <div class="form-group">
-        <label>Select Payment Method</label>
-        <select id="paymentMethod" onchange="updatePaymentDetails()">
-          <option value="TRC20">USDT (TRC-20) - Binance</option>
-          <option value="JazzCash">JazzCash</option>
-          <option value="EasyPaisa">EasyPaisa</option>
-        </select>
-      </div>
-      <div class="info-box" id="paymentDetails"></div>
-      <div class="form-group">
-        <label>Deposit Amount ($)</label>
-        <input type="number" id="depositAmount" min="100" value="100">
-      </div>
-      <div class="form-group">
-        <label>Transaction TRX ID</label>
-        <input type="text" id="trxId" placeholder="Enter TRX ID">
-      </div>
-      <button class="btn-main" onclick="submitDeposit()">Submit Deposit</button>
+    <!-- Startup Announcement Modal -->
+    <div class="modal-overlay" id="startup-modal">
+        <div class="modal-card">
+            <h2>📢 DBL Portal Official Announcement</h2>
+            <p>
+                Hi dear users! How are you all?<br><br>
+                Welcome to <strong>Dollar Burst Limited (DBL)</strong>! This is a 100% trusted and long-term investment platform. May Allah bless you all with success, happiness, and continuous earnings!
+            </p>
+            <button class="btn-action" onclick="closeModal()">Continue to Dashboard</button>
+        </div>
     </div>
 
-    <!-- 5. WITHDRAW VIEW -->
-    <div id="withdrawView" class="view">
-      <div class="form-group">
-        <label>Withdrawal Method</label>
-        <select id="withdrawMethod">
-          <option value="TRC20">USDT (TRC-20)</option>
-          <option value="JazzCash">JazzCash</option>
-          <option value="EasyPaisa">EasyPaisa</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Account Number / Wallet Address</label>
-        <input type="text" id="withdrawAccount" placeholder="Enter Account/Wallet Detail">
-      </div>
-      <div class="form-group">
-        <label>Amount ($)</label>
-        <input type="number" id="withdrawAmount" placeholder="Enter Amount" min="90">
-      </div>
-      <button class="btn-main" onclick="submitWithdraw()">Request Withdrawal</button>
-    </div>
+    <script>
+        let userData = {
+            name: "Anas Khan",
+            balance: 55001.00,
+            taskDone: false
+        };
 
-  </div>
+        function calculateVIP(balance) {
+            if (balance >= 5000) return { level: "VIP 11", reward: 50.00 };
+            if (balance >= 4000) return { level: "VIP 10", reward: 40.00 };
+            if (balance >= 3000) return { level: "VIP 9", reward: 30.00 };
+            if (balance >= 2500) return { level: "VIP 8", reward: 25.00 };
+            if (balance >= 2000) return { level: "VIP 7", reward: 20.00 };
+            if (balance >= 1500) return { level: "VIP 6", reward: 15.00 };
+            if (balance >= 1000) return { level: "VIP 5", reward: 10.00 };
+            if (balance >= 800) return { level: "VIP 4", reward: 8.00 };
+            if (balance >= 500) return { level: "VIP 3", reward: 5.00 };
+            if (balance >= 200) return { level: "VIP 2", reward: 2.00 };
+            if (balance >= 100) return { level: "VIP 1", reward: 1.00 };
+            return { level: "Standard", reward: 1.00 };
+        }
 
-  <script>
-    const adminDummy = { 
-      firstName: "Anas", 
-      lastName: "Khan (VIP)", 
-      username: "admin", 
-      email: "admin@dbl.com", 
-      phone: "03000000000", 
-      password: "dbl123", 
-      balance: 55000.00,
-      depositedAmount: 0,
-      taskClaimed: false 
-    };
+        function updateUI() {
+            const vipInfo = calculateVIP(userData.balance);
+            document.getElementById('balance').innerText = userData.balance.toFixed(2);
+            document.getElementById('user-display-name').innerText = userData.name + ` (${vipInfo.level})`;
+            document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
+            document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
+        }
 
-    let users = JSON.parse(localStorage.getItem('dbl_users')) || [adminDummy];
-    
-    if(!users.some(u => u.username === 'admin')) {
-      users.push(adminDummy);
-      localStorage.setItem('dbl_users', JSON.stringify(users));
-    }
+        function claimTaskReward() {
+            if (userData.taskDone) return;
+            const vipInfo = calculateVIP(userData.balance);
+            userData.balance += vipInfo.reward;
+            userData.taskDone = true;
+            
+            const btn = document.getElementById('task-btn');
+            btn.innerText = "Task Completed Today";
+            btn.disabled = true;
+            
+            updateUI();
+            alert(`Success! $${vipInfo.reward.toFixed(2)} added to your balance.`);
+        }
 
-    let currentUser = null;
+        function toggleSidebar() {
+            const overlay = document.getElementById('sidebar-overlay');
+            overlay.classList.toggle('active');
+        }
 
-    const paymentAccounts = {
-      TRC20: { title: "DBL USDT TRC-20 Address", value: "TY3xP9K8mN2vQ5L7R4wS1tU6vX8yZ0aBcD", note: "Send USDT TRC-20." },
-      JazzCash: { title: "DBL JazzCash Account", value: "03001234567 (DBL Merchant)", note: "Paste Ref ID after sending." },
-      EasyPaisa: { title: "DBL EasyPaisa Account", value: "03451234567 (DBL Merchant)", note: "Paste Ref ID after sending." }
-    };
+        function closeSidebar(e) {
+            if (e.target.id === 'sidebar-overlay') {
+                document.getElementById('sidebar-overlay').classList.remove('active');
+            }
+        }
 
-    function toggleAuth(mode) {
-      document.getElementById('loginError').innerText = '';
-      document.getElementById('regError').innerText = '';
-      if(mode === 'register') {
-        document.getElementById('loginView').classList.remove('active');
-        document.getElementById('registerView').classList.add('active');
-      } else {
-        document.getElementById('registerView').classList.remove('active');
-        document.getElementById('loginView').classList.add('active');
-      }
-    }
+        function switchTab(tabName) {
+            const views = ['dashboard', 'deposit', 'withdraw', 'announcement'];
+            views.forEach(view => {
+                document.getElementById(`view-${view}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            toggleSidebar();
+        }
 
-    function handleRegister() {
-      const fn = document.getElementById('regFirstName').value.trim();
-      const ln = document.getElementById('regLastName').value.trim();
-      const un = document.getElementById('regUsername').value.trim().toLowerCase();
-      const em = document.getElementById('regEmail').value.trim().toLowerCase();
-      const ph = document.getElementById('regPhone').value.trim();
-      const pw = document.getElementById('regPass').value;
+        function showAnnouncement() {
+            document.getElementById('startup-modal').style.display = 'flex';
+        }
 
-      if(!fn || !ln || !un || !em || !ph || !pw) {
-        document.getElementById('regError').innerText = 'Please fill all registration fields!';
-        return;
-      }
+        function closeModal() {
+            document.getElementById('startup-modal').style.display = 'none';
+        }
 
-      const exists = users.find(u => u.username === un || u.email === em);
-      if(exists) {
-        document.getElementById('regError').innerText = 'Username or Email is already registered!';
-        return;
-      }
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
 
-      const newUser = { firstName: fn, lastName: ln, username: un, email: em, phone: ph, password: pw, balance: 0.00, depositedAmount: 0, taskClaimed: false };
-      users.push(newUser);
-      localStorage.setItem('dbl_users', JSON.stringify(users));
-
-      alert('Account created successfully! Please login.');
-      toggleAuth('login');
-    }
-
-    function handleLogin() {
-      const id = document.getElementById('loginIdentifier').value.trim().toLowerCase();
-      const pw = document.getElementById('loginPass').value;
-
-      const user = users.find(u => (u.username === id || u.email === id) && u.password === pw);
-
-      if(!user) {
-        document.getElementById('loginError').innerText = 'Invalid username/email or password!';
-        return;
-      }
-
-      currentUser = user;
-      document.getElementById('userFullName').innerText = `${user.firstName} ${user.lastName}`;
-      document.getElementById('userBalance').innerText = `$${user.balance.toFixed(2)}`;
-      
-      const taskBtn = document.getElementById('taskBtn');
-      if(user.taskClaimed) {
-        taskBtn.innerText = 'Task Completed Today';
-        taskBtn.style.background = '#555';
-      } else {
-        taskBtn.innerText = 'Claim Daily Task ($1.00)';
-        taskBtn.style.background = '#00e676';
-      }
-
-      document.getElementById('loginView').classList.remove('active');
-      document.getElementById('navTabs').style.display = 'flex';
-      switchTab('dashboard');
-    }
-
-    function handleLogout() {
-      currentUser = null;
-      document.getElementById('navTabs').style.display = 'none';
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById('loginView').classList.add('active');
-    }
-
-    function switchTab(tabName, evt) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      
-      document.getElementById(tabName + 'View').classList.add('active');
-      if(evt) evt.target.classList.add('active');
-      if(tabName === 'deposit') updatePaymentDetails();
-    }
-
-    function updatePaymentDetails() {
-      const method = document.getElementById('paymentMethod').value;
-      const details = paymentAccounts[method];
-      document.getElementById('paymentDetails').innerHTML = `
-        <p><strong>${details.title}:</strong></p>
-        <p style="margin:4px 0;">${details.value}</p>
-        <small style="color:#aaa;">${details.note}</small>
-      `;
-    }
-
-    function claimDailyReward() {
-      if(!currentUser) return;
-
-      if (currentUser.balance < 100 && currentUser.username !== 'admin') {
-        alert("Welcome to DBL family! 💖 To start claiming your daily rewards, please make a minimum deposit of $100 first. Happy Earning!");
-        return;
-      }
-
-      if (currentUser.taskClaimed) { 
-        alert('Today task already claimed!'); 
-        return; 
-      }
-      
-      currentUser.balance += 1.00;
-      currentUser.taskClaimed = true;
-      
-      const idx = users.findIndex(u => u.username === currentUser.username);
-      if(idx !== -1) users[idx] = currentUser;
-      localStorage.setItem('dbl_users', JSON.stringify(users));
-
-      document.getElementById('userBalance').innerText = '$' + currentUser.balance.toFixed(2);
-      document.getElementById('taskBtn').innerText = 'Task Completed Today';
-      document.getElementById('taskBtn').style.background = '#555';
-    }
-
-    function submitDeposit() {
-      const amt = parseFloat(document.getElementById('depositAmount').value);
-      const trx = document.getElementById('trxId').value.trim();
-      
-      if (!amt || amt < 100) { 
-        alert('Minimum deposit amount is $100. Smaller amounts are not accepted.'); 
-        return; 
-      }
-      
-      if (!trx) { 
-        alert('Please enter a valid Transaction TRX ID!'); 
-        return; 
-      }
-      
-      alert('Deposit request submitted! Admin will verify your transaction shortly.');
-      document.getElementById('trxId').value = '';
-    }
-
-    function submitWithdraw() {
-      const acc = document.getElementById('withdrawAccount').value.trim();
-      const reqAmt = parseFloat(document.getElementById('withdrawAmount').value);
-      
-      if (!acc || !reqAmt) { 
-        alert('Please fill all withdrawal details!'); 
-        return; 
-      }
-
-      if (reqAmt < 90) {
-        alert('Minimum withdrawal amount is $90.');
-        return;
-      }
-
-      // Calculate profit balance excluding locked deposit amount (except admin)
-      const lockedDeposit = currentUser.depositedAmount || 100;
-      const profitBalance = currentUser.username === 'admin' ? currentUser.balance : (currentUser.balance - lockedDeposit);
-
-      if (profitBalance < 90 || reqAmt > profitBalance) {
-        alert(`Withdrawal failed! Your initial deposit ($100) is locked. You can only withdraw your earned profits once they reach a minimum of $90.`);
-        return;
-      }
-
-      alert('Withdrawal request submitted successfully!');
-    }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-    }
-  </script>
-
+        updateUI();
+    </script>
 </body>
 </html>
