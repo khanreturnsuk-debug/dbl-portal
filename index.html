@@ -977,7 +977,7 @@
             document.getElementById(`view-${view}`).classList.remove('hidden');
         }
 
-        function handleRegister() {
+        async function handleRegister() {
             clearError('reg-error');
             clearSuccess('reg-success');
 
@@ -1007,20 +1007,34 @@
             }
 
             const fullName = `${fname} ${lname}`;
-            const newUser = {
+            const userData = {
                 fullName: fullName,
                 username: username,
                 email: email,
                 password: password,
-                balance: 100.00,
-                taskDone: false
+                phone: ""
             };
 
-            saveAccount(username, newUser);
-            saveAccount(email, newUser);
+            try {
+                const response = await fetch('https://dbl-backend.vercel.app/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
 
-            alert(`Account registered successfully!\nYour Username is: ${username}\nPlease Login now.`);
-            switchAuthView('login');
+                const result = await response.json();
+                
+                if (response.ok && (result.success !== false)) {
+                    saveAccount(username, { ...userData, balance: 100.00, taskDone: false });
+                    saveAccount(email, { ...userData, balance: 100.00, taskDone: false });
+                    alert(`Account registered successfully on Database!\nYour Username is: ${username}`);
+                    switchAuthView('login');
+                } else {
+                    showError('reg-error', result.message || 'Registration failed');
+                }
+            } catch (err) {
+                showError('reg-error', 'Server connection error!');
+            }
         }
 
         function handleLogin() {
@@ -1125,7 +1139,6 @@
         // Fetch Dynamic Announcement from Backend Server
         async function fetchLatestAnnouncement() {
             try {
-                // Yahan apna current Serveo URL lagayein jo terminal mein aya ho
                 const response = await fetch('https://b3f42c9bab63fda1-175-107-227-254.serveousercontent.com/api/announcements');
                 const data = await response.json();
                 
