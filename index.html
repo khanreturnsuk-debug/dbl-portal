@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Portal - Login & Dashboard</title>
+    <title>Secure Portal - VIP & Tasks Dashboard</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,13 +15,11 @@
             background-color: #0f172a;
             color: #f8fafc;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            margin: 30px auto;
             background: #1e293b;
             padding: 30px;
             border-radius: 12px;
@@ -30,28 +28,28 @@
         .hidden {
             display: none !important;
         }
-        h2 {
+        h2, h3 {
             margin-bottom: 20px;
             text-align: center;
             color: #38bdf8;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13px;
             color: #94a3b8;
         }
         input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 9px 12px;
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 6px;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
         }
         input:focus {
             border-color: #38bdf8;
@@ -59,13 +57,13 @@
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             background: #38bdf8;
             border: none;
             border-radius: 6px;
             color: #0f172a;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             margin-top: 10px;
             transition: background 0.2s;
@@ -80,16 +78,25 @@
         .error-msg {
             background: #fee2e2;
             color: #dc2626;
-            padding: 10px;
+            padding: 9px;
             border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .success-msg {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 9px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 13px;
             text-align: center;
         }
         .switch-text {
             text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 12px;
+            font-size: 13px;
             color: #94a3b8;
         }
         .switch-text span {
@@ -97,31 +104,77 @@
             cursor: pointer;
             text-decoration: underline;
         }
-        .dashboard-card {
-            background: #0f172a;
+        /* Dashboard Layout */
+        .dashboard-container {
+            max-width: 900px;
+            margin: 20px auto;
             padding: 20px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .toolbar button {
+            margin-top: 0;
+            background: #334155;
+            color: #fff;
+            white-space: nowrap;
+            width: auto;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+        .toolbar button.active {
+            background: #38bdf8;
+            color: #0f172a;
+        }
+        .tab-content {
+            background: #1e293b;
+            padding: 25px;
             border-radius: 8px;
             margin-bottom: 15px;
+        }
+        .vip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .vip-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .vip-card h4 {
+            color: #38bdf8;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- AUTH CONTAINER -->
+    <div id="auth-wrapper" class="container">
         <!-- LOGIN VIEW -->
         <div id="view-login">
             <h2>User Login</h2>
             <div id="login-error" class="error-msg hidden"></div>
             <div class="form-group">
                 <label>Username / Email</label>
-                <input type="text" id="login-username" placeholder="Enter username">
+                <input type="text" id="login-username" placeholder="Enter username or email">
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" id="login-password" placeholder="Enter password">
             </div>
             <button onclick="handleLogin()">Login</button>
-            <div class="switch-text">Don't have an account? <span onclick="switchView('register')">Register</span></div>
+            <div class="switch-text">Don't have an account? <span onclick="switchAuthView('register')">Register</span></div>
         </div>
 
         <!-- REGISTER VIEW -->
@@ -129,30 +182,116 @@
             <h2>Create Account</h2>
             <div id="reg-error" class="error-msg hidden"></div>
             <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="reg-firstname" placeholder="First name">
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="reg-lastname" placeholder="Last name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="Email address">
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="reg-phone" placeholder="Phone number">
+            </div>
+            <div class="form-group">
                 <label>Username</label>
-                <input type="text" id="reg-username" placeholder="Choose a username">
+                <input type="text" id="reg-username" placeholder="Choose username">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="reg-password" placeholder="Choose a password">
+                <input type="password" id="reg-password" placeholder="Choose password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="reg-confirmpassword" placeholder="Confirm password">
             </div>
             <button id="reg-submit-btn" onclick="handleRegister()">Register</button>
-            <div class="switch-text">Already have an account? <span onclick="switchView('login')">Login</span></div>
+            <div class="switch-text">Already have an account? <span onclick="switchAuthView('login')">Login</span></div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="dashboard-container hidden">
+        <h2>Dashboard Portal</h2>
+        
+        <!-- Toolbar Tabs -->
+        <div class="toolbar">
+            <button id="tab-btn-home" class="active" onclick="switchTab('home')">Home</button>
+            <button id="tab-btn-profile" onclick="switchTab('profile')">Profile</button>
+            <button id="tab-btn-vip" onclick="switchTab('vip')">VIP Levels</button>
+            <button id="tab-btn-tasks" onclick="switchTab('tasks')">Tasks</button>
+            <button id="tab-btn-wallet" onclick="switchTab('wallet')">Wallet</button>
+            <button id="tab-btn-settings" onclick="switchTab('settings')">Settings</button>
+            <button style="background: #ef4444; color: #fff;" onclick="handleLogout()">Logout</button>
         </div>
 
-        <!-- DASHBOARD VIEW -->
-        <div id="view-dashboard" class="hidden">
-            <h2>Dashboard</h2>
-            <div class="dashboard-card">
-                <p><strong>Welcome, </strong><span id="dash-name">User</span></p>
-                <p><strong>Balance: </strong>$<span id="dash-balance">0.00</span></p>
+        <!-- Home Tab -->
+        <div id="tab-home" class="tab-content">
+            <h3>Welcome, <span id="dash-name">User</span>!</h3>
+            <p style="margin-top: 10px; color: #94a3b8; text-align: center;">Current Balance: $<span id="dash-balance">0.00</span></p>
+            <p style="margin-top: 5px; color: #38bdf8; text-align: center;">Active VIP Level: <span id="dash-vip">VIP 1</span></p>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="tab-profile" class="tab-content hidden">
+            <h3>Profile Information</h3>
+            <p style="margin-top: 10px;"><strong>Full Name:</strong> <span id="profile-fullname">-</span></p>
+            <p style="margin-top: 5px;"><strong>Email:</strong> <span id="profile-email">-</span></p>
+            <p style="margin-top: 5px;"><strong>Phone:</strong> <span id="profile-phone">-</span></p>
+            <p style="margin-top: 5px;"><strong>Username:</strong> <span id="profile-username">-</span></p>
+        </div>
+
+        <!-- VIP Levels Tab (VIP 1 to VIP 10) -->
+        <div id="tab-vip" class="tab-content hidden">
+            <h3>VIP Membership Levels</h3>
+            <p style="text-align: center; color: #94a3b8; font-size: 14px;">Upgrade your VIP status to unlock higher daily earnings and benefits.</p>
+            <div class="vip-grid" id="vip-levels-container">
+                <!-- Dynamically populated VIP cards -->
             </div>
-            <button id="menu-toggle-btn" onclick="handleLogout()">Logout</button>
+        </div>
+
+        <!-- Tasks Tab (1% reward based on balance) -->
+        <div id="tab-tasks" class="tab-content hidden">
+            <h3>Daily Earning Tasks</h3>
+            <div id="task-alert" class="hidden"></div>
+            <div style="background: #0f172a; padding: 20px; border-radius: 8px; text-align: center; margin-top: 15px;">
+                <p style="margin-bottom: 15px; color: #cbd5e1;">Complete your daily task to earn <strong>1%</strong> of your current account balance!</p>
+                <button onclick="completeTask()" style="max-width: 250px;">Complete Task & Earn</button>
+            </div>
+        </div>
+
+        <!-- Wallet Tab -->
+        <div id="tab-wallet" class="tab-content hidden">
+            <h3>Wallet Section</h3>
+            <p style="margin-top: 10px; color: #94a3b8;">Total Balance: $<span id="wallet-balance">0.00</span></p>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tab-settings" class="tab-content hidden">
+            <h3>Account Settings</h3>
+            <p style="margin-top: 10px; color: #94a3b8;">Manage your security preferences and profile configs.</p>
         </div>
     </div>
 
     <script>
         let currentUser = null;
+
+        const vipData = [
+            { level: 1, price: 100 },
+            { level: 2, price: 200 },
+            { level: 3, price: 300 },
+            { level: 4, price: 400 },
+            { level: 5, price: 500 },
+            { level: 6, price: 600 },
+            { level: 7, price: 700 },
+            { level: 8, price: 800 },
+            { level: 9, price: 900 },
+            { level: 10, price: 1000 }
+        ];
 
         function showError(elementId, message) {
             const errBox = document.getElementById(elementId);
@@ -166,20 +305,27 @@
             errBox.classList.add('hidden');
         }
 
-        function switchView(viewName) {
+        function switchAuthView(viewName) {
             clearError('login-error');
             clearError('reg-error');
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-register').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.add('hidden');
 
             if (viewName === 'login') {
                 document.getElementById('view-login').classList.remove('hidden');
             } else if (viewName === 'register') {
                 document.getElementById('view-register').classList.remove('hidden');
-            } else if (viewName === 'dashboard') {
-                document.getElementById('view-dashboard').classList.remove('hidden');
             }
+        }
+
+        function switchTab(tabName) {
+            ['home', 'profile', 'vip', 'tasks', 'wallet', 'settings'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            if (tabName === 'vip') renderVipCards();
         }
 
         function getAccounts() {
@@ -190,14 +336,24 @@
             }
         }
 
-        // Registration with Loading State & Success Notification
+        // Registration with Loading State
         async function handleRegister() {
             clearError('reg-error');
+            const firstName = document.getElementById('reg-firstname').value.trim();
+            const lastName = document.getElementById('reg-lastname').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
             const username = document.getElementById('reg-username').value.trim();
             const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirmpassword').value;
 
-            if (!username || !password) {
+            if (!firstName || !lastName || !email || !phone || !username || !password || !confirmPassword) {
                 showError('reg-error', '⚠️ Please fill in all fields.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('reg-error', '❌ Passwords do not match!');
                 return;
             }
 
@@ -205,15 +361,13 @@
             submitBtn.disabled = true;
             submitBtn.innerText = "Creating Account...";
 
-            // Simulating network/processing delay for loading effect
             await new Promise(resolve => setTimeout(resolve, 800));
 
             try {
                 let users = getAccounts();
                 const lowerUsername = username.toLowerCase();
 
-                // Check if user already exists
-                const existingKey = Object.keys(users).find(k => k.trim().toLowerCase() === lowerUsername);
+                const existingKey = Object.keys(users).find(k => k && k.trim().toLowerCase() === lowerUsername);
                 if (existingKey) {
                     showError('reg-error', '❌ Username already taken!');
                     submitBtn.disabled = false;
@@ -221,38 +375,47 @@
                     return;
                 }
 
-                // Save new user
                 users[username] = {
-                    username: username,
-                    fullName: username,
-                    password: password,
+                    firstName,
+                    lastName,
+                    fullName: `${firstName} ${lastName}`,
+                    email,
+                    phone,
+                    username,
+                    password,
                     balance: 0.00,
+                    vip: 1,
                     taskDone: false
                 };
 
                 localStorage.setItem('users', JSON.stringify(users));
 
-                alert('Account created successfully!');
+                alert('Account registered successfully!');
+                document.getElementById('reg-firstname').value = '';
+                document.getElementById('reg-lastname').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-phone').value = '';
                 document.getElementById('reg-username').value = '';
                 document.getElementById('reg-password').value = '';
-                switchView('login');
+                document.getElementById('reg-confirmpassword').value = '';
+                switchAuthView('login');
 
             } catch (err) {
-                showError('reg-error', '❌ Registration failed. Try again.');
+                showError('reg-error', '❌ Server error, please try again.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Register";
             }
         }
 
-        // Advanced Login Logic with "User not found" check
+        // Login Handler with exact User Not Found check & Backend Admin Integration ($55,001)
         function handleLogin() {
             clearError('login-error');
             const input = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value;
 
             if (!input || !pass) {
-                showError('login-error', '⚠️ Please enter both Username and Password.');
+                showError('login-error', '⚠️ Please enter both Username/Email and Password.');
                 return;
             }
 
@@ -264,17 +427,20 @@
                 }
                 currentUser = {
                     fullName: "Anas Khan",
+                    username: "admin1",
+                    email: "admin@portal.com",
+                    phone: "+92 300 0000000",
                     balance: 55001.00,
+                    vip: 10,
                     taskDone: false
                 };
             } else {
-                const users = getAccounts();
+                const users = getAccounts() || {};
                 const lowerInput = input.toLowerCase();
                 
                 let matchedKey = Object.keys(users).find(k => k && k.trim().toLowerCase() === lowerInput);
                 let matchedUser = matchedKey ? users[matchedKey] : null;
 
-                // Fallback check in localstorage items directly
                 if (!matchedUser) {
                     for (let i = 0; i < localStorage.length; i++) {
                         const key = localStorage.key(i);
@@ -282,7 +448,8 @@
                             const val = JSON.parse(localStorage.getItem(key));
                             if (val && typeof val === 'object' && val.password) {
                                 if (key.trim().toLowerCase() === lowerInput || 
-                                    (val.username && val.username.trim().toLowerCase() === lowerInput)) {
+                                    (val.username && val.username.trim().toLowerCase() === lowerInput) ||
+                                    (val.email && val.email.trim().toLowerCase() === lowerInput)) {
                                     matchedUser = val;
                                     break;
                                 }
@@ -291,7 +458,6 @@
                     }
                 }
 
-                // Proper User Not Found Error
                 if (!matchedUser) {
                     showError('login-error', '❌ User not found! Please register first.');
                     return;
@@ -304,14 +470,80 @@
                 currentUser = matchedUser;
             }
 
+            document.getElementById('auth-wrapper').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
             updateUI();
-            switchView('dashboard');
         }
 
         function updateUI() {
             if (currentUser) {
                 document.getElementById('dash-name').innerText = currentUser.fullName || currentUser.username || "User";
                 document.getElementById('dash-balance').innerText = Number(currentUser.balance || 0).toFixed(2);
+                document.getElementById('dash-vip').innerText = `VIP ${currentUser.vip || 1}`;
+                document.getElementById('wallet-balance').innerText = Number(currentUser.balance || 0).toFixed(2);
+
+                document.getElementById('profile-fullname').innerText = currentUser.fullName || "N/A";
+                document.getElementById('profile-email').innerText = currentUser.email || "N/A";
+                document.getElementById('profile-phone').innerText = currentUser.phone || "N/A";
+                document.getElementById('profile-username').innerText = currentUser.username || "N/A";
+            }
+        }
+
+        // Render VIP 1 to VIP 10 Cards
+        function renderVipCards() {
+            const container = document.getElementById('vip-levels-container');
+            container.innerHTML = '';
+            vipData.forEach(v => {
+                const isCurrent = (currentUser.vip === v.level);
+                container.innerHTML += `
+                    <div class="vip-card">
+                        <h4>VIP ${v.level}</h4>
+                        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Price: $${v.price}</p>
+                        <button onclick="upgradeVip(${v.level}, ${v.price})" ${isCurrent ? 'disabled style="background:#10b981; color:#fff;"' : ''}>
+                            ${isCurrent ? 'Active' : 'Upgrade'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function upgradeVip(level, price) {
+            if (currentUser.balance < price) {
+                alert("❌ Insufficient balance to upgrade to this VIP level!");
+                return;
+            }
+            currentUser.balance -= price;
+            currentUser.vip = level;
+            saveUserData();
+            updateUI();
+            renderVipCards();
+            alert(`✅ Successfully upgraded to VIP ${level}!`);
+        }
+
+        // Task completion gives 1% of current balance
+        function completeTask() {
+            const alertBox = document.getElementById('task-alert');
+            const reward = currentUser.balance * 0.01;
+            currentUser.balance += reward;
+            saveUserData();
+            updateUI();
+
+            alertBox.className = "success-msg";
+            alertBox.innerText = `🎉 Task completed successfully! You earned $${reward.toFixed(2)} (1% of your balance).`;
+            alertBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 4000);
+        }
+
+        function saveUserData() {
+            if (currentUser && currentUser.username && currentUser.username !== 'admin1') {
+                let users = getAccounts();
+                if (users[currentUser.username]) {
+                    users[currentUser.username] = currentUser;
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
             }
         }
 
@@ -319,7 +551,10 @@
             currentUser = null;
             document.getElementById('login-username').value = '';
             document.getElementById('login-password').value = '';
-            switchView('login');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('auth-wrapper').classList.remove('hidden');
+            switchAuthView('login');
+            switchTab('home');
         }
     </script>
 </body>
