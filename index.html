@@ -840,8 +840,8 @@
                             <div class="val">$<span id="avail-balance">12.00</span></div>
                         </div>
                         <div class="breakdown-item" style="text-align: right;">
-                            <div class="label">Locked Balance (Bonus)</div>
-                            <div class="val">$<span id="locked-balance">100.00</span></div>
+                            <div class="label">Invested Amount</div>
+                            <div class="val">$<span id="invested-amount">0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -962,7 +962,7 @@
         <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 12px; color: #2ea043;">Withdraw Funds</h2>
-            <div class="status-box">Minimum Withdrawal is $90. Note: 17% charges/tax will be applied on withdrawals. Locked balance bonus cannot be withdrawn.</div>
+            <div class="status-box">Minimum Withdrawal is $90. Note: 17% charges/tax will be applied on withdrawals. Deposited principal cannot be withdrawn.</div>
             <div id="withdraw-success" class="success-box hidden"></div>
             <div id="withdraw-error" class="error-box hidden"></div>
             <div class="form-group">
@@ -1143,14 +1143,14 @@
         function updateUI() {
             if (!currentUser) return;
             
-            const lockedBonus = 100.00;
-            const availableBal = currentUser.availableBalance || 12.00; 
-            const totalBalance = availableBal + lockedBonus;
+            const investedAmt = currentUser.investedAmount || 0;
+            const availableBal = currentUser.balance !== undefined ? currentUser.balance : (currentUser.availableBalance || 0); 
+            const totalBalance = availableBal + investedAmt;
             const vipInfo = calculateVIP(totalBalance);
 
             document.getElementById('balance').innerText = totalBalance.toFixed(2);
             document.getElementById('avail-balance').innerText = availableBal.toFixed(2);
-            document.getElementById('locked-balance').innerText = lockedBonus.toFixed(2);
+            document.getElementById('invested-amount').innerText = investedAmt.toFixed(2);
             document.getElementById('user-display-name').innerText = currentUser.fullName;
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
@@ -1176,7 +1176,8 @@
                 if (Array.isArray(users)) {
                     const latestUserData = users.find(u => u.username.toLowerCase() === currentUsername.toLowerCase());
                     if (latestUserData) {
-                        currentUser.availableBalance = latestUserData.balance || 12.00;
+                        currentUser.balance = latestUserData.balance || 0;
+                        currentUser.investedAmount = latestUserData.investedAmount || 0;
                         sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
                         updateUI();
                     }
@@ -1252,7 +1253,7 @@
                 return;
             }
 
-            const userData = { fullName: `${fname} ${lname}`, username, email, password, availableBalance: 12.00, taskDone: false };
+            const userData = { fullName: `${fname} ${lname}`, username, email, password, balance: 0, investedAmount: 0, taskDone: false };
             try {
                 const response = await fetch('https://dbl-backend.vercel.app/api/register', {
                     method: 'POST',
@@ -1279,7 +1280,7 @@
                 return;
             }
             if (input.toLowerCase() === "anas khan" || input.toLowerCase() === "admin" || input.toLowerCase() === "anas_admin") {
-                currentUser = { fullName: "Anas Khan", username: "anas_admin", availableBalance: 12.00, taskDone: false };
+                currentUser = { fullName: "Anas Khan", username: "anas_admin", balance: 0, investedAmount: 0, taskDone: false };
                 proceedLoginSuccess(currentUser);
                 return;
             }
@@ -1292,7 +1293,8 @@
                 const result = await response.json();
                 if (response.ok && result.success !== false) {
                     currentUser = result.user || result;
-                    if (currentUser.availableBalance === undefined) currentUser.availableBalance = 12.00;
+                    if (currentUser.balance === undefined) currentUser.balance = 0;
+                    if (currentUser.investedAmount === undefined) currentUser.investedAmount = 0;
                     proceedLoginSuccess(currentUser);
                 } else {
                     showCustomAlert('Invalid username or password!');
@@ -1305,7 +1307,8 @@
                     return;
                 }
                 currentUser = matchedUser;
-                if (currentUser.availableBalance === undefined) currentUser.availableBalance = 12.00;
+                if (currentUser.balance === undefined) currentUser.balance = 0;
+                if (currentUser.investedAmount === undefined) currentUser.investedAmount = 0;
                 proceedLoginSuccess(currentUser);
             }
         }
@@ -1343,7 +1346,8 @@
             const savedSession = sessionStorage.getItem('dbl_current_user');
             if (savedSession) {
                 currentUser = JSON.parse(savedSession);
-                if (currentUser.availableBalance === undefined) currentUser.availableBalance = 12.00;
+                if (currentUser.balance === undefined) currentUser.balance = 0;
+                if (currentUser.investedAmount === undefined) currentUser.investedAmount = 0;
                 document.getElementById('view-login').classList.add('hidden');
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('menu-toggle-btn').classList.remove('hidden');
@@ -1374,9 +1378,9 @@
 
         function claimTaskReward() {
             if (!currentUser || currentUser.taskDone) return;
-            const totalBal = currentUser.availableBalance + 100.00;
+            const totalBal = (currentUser.balance || 0) + (currentUser.investedAmount || 0);
             const vipInfo = calculateVIP(totalBal);
-            currentUser.availableBalance += vipInfo.reward;
+            currentUser.balance = (currentUser.balance || 0) + vipInfo.reward;
             currentUser.taskDone = true;
             saveAccount(currentUser.username, currentUser);
             const btn = document.getElementById('task-btn');
@@ -1430,8 +1434,8 @@
                 showCustomAlert('Minimum withdrawal amount is $90!');
                 return;
             }
-            if (currentUser.availableBalance < amount) {
-                showCustomAlert('Insufficient available balance! (Locked bonus cannot be withdrawn)');
+            if ((currentUser.balance || 0) < amount) {
+                showCustomAlert('Insufficient earnings balance for withdrawal! (Deposited principal cannot be withdrawn)');
                 return;
             }
 
@@ -1446,14 +1450,16 @@
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    currentUser.availableBalance -= amount;
+                    currentUser.balance -= amount;
                     saveAccount(currentUser.username, currentUser);
                     updateUI();
                     showCustomAlert(`✔️ Withdrawal request submitted!\nAmount: $${amount}\n17% Admin Charges Deducted: $${taxCharges.toFixed(2)}`);
                     loadUserTransactions();
+                } else {
+                    showCustomAlert(result.message || 'Withdrawal failed');
                 }
             } catch (err) {
-                currentUser.availableBalance -= amount;
+                currentUser.balance -= amount;
                 saveAccount(currentUser.username, currentUser);
                 updateUI();
                 showCustomAlert(`✔️ Withdrawal submitted!\n17% Tax/Charges applied: $${taxCharges.toFixed(2)}`);
