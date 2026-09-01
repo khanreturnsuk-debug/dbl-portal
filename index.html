@@ -87,6 +87,9 @@
         .sidebar-header {
             padding: 20px;
             border-bottom: 1px solid #2a303c;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
         .sidebar-header h2 {
             color: #2ea043;
@@ -95,6 +98,20 @@
         .sidebar-header p {
             color: #9ca3af;
             font-size: 12px;
+            margin-top: 2px;
+        }
+        .sidebar-close-btn {
+            background: transparent;
+            border: none;
+            color: #8b949e;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .sidebar-close-btn:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.1);
         }
         .sidebar-menu {
             list-style: none;
@@ -706,8 +723,11 @@
         <!-- Sidebar / Side Menu Drawer -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>DBL Portal</h2>
-                <p id="sidebar-uname-display">anas_admin</p>
+                <div>
+                    <h2>DBL Portal</h2>
+                    <p id="sidebar-uname-display">anas_admin</p>
+                </div>
+                <button class="sidebar-close-btn" onclick="toggleSidebar()">✕</button>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#" onclick="switchTabFromSidebar('dashboard')">🏠 Dashboard</a></li>
@@ -960,7 +980,6 @@
             <div class="form-group">
                 <label>Amount ($) [Min: $90, 17% Tax]</label>
                 <input type="number" id="withdraw-amount-input" class="form-control" placeholder="Enter Amount">
-                <!-- Live Tax & Net Payout Calculation Display -->
                 <div id="tax-calculation-box" style="margin-top: 8px; font-size: 13px; color: #8b949e; display: none;">
                     Fee/Tax (17%): <span id="calc-tax" style="color: #f85149;">$0.00</span> | Net Payout: <span id="calc-net" style="color: #2ea043; font-weight: bold;">$0.00</span>
                 </div>
@@ -975,7 +994,7 @@
 
         <!-- Profile View -->
         <div id="view-profile" class="view-content hidden">
-            <h2 style="margin-bottom: 15px; color: #2ea043;">Account Profile</h2>
+            <h2 style="margin-bottom: 15px; color: #2ea043;">Team & Profile</h2>
             
             <div class="status-box" style="margin-bottom: 15px;">
                 <p style="margin-bottom: 6px;"><strong>Name:</strong> <span id="profile-name">Anas Khan</span></p>
@@ -983,7 +1002,26 @@
                 <p style="margin-bottom: 6px;"><strong>Current VIP:</strong> <span id="profile-vip">VIP 1</span></p>
             </div>
 
-            <!-- Referral Link Box Added -->
+            <!-- Team & Referral Stats Box -->
+            <div class="overview-section" style="margin-top: 0; margin-bottom: 15px; padding: 14px;">
+                <div class="section-subtitle">Team & Referral Overview</div>
+                <div class="overview-grid" style="margin-top: 8px;">
+                    <div class="overview-card">
+                        <div class="ov-title">Team Size</div>
+                        <div class="ov-val" id="team-size-count">0 Members</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-title">Ref. Available Bal.</div>
+                        <div class="ov-val" id="ref-avail-bal">$0.00</div>
+                    </div>
+                    <div class="overview-card" style="grid-column: span 2;">
+                        <div class="ov-title">Total Referral Deposit</div>
+                        <div class="ov-val" id="ref-total-dep">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Link Box -->
             <div class="referral-box">
                 <h3>Invite Friends & Earn</h3>
                 <div class="referral-row">
@@ -1028,7 +1066,6 @@
     </div>
 
     <script>
-        // Custom popup alert to hide domain identity / khanreturns info
         function showCustomAlert(message) {
             const existingModal = document.getElementById('custom-alert-modal');
             if (existingModal) existingModal.remove();
@@ -1123,7 +1160,6 @@
             document.getElementById('profile-vip').innerText = vipInfo.level;
             document.getElementById('sidebar-uname-display').innerText = currentUser.username;
 
-            // Update referral link dynamically based on username
             const refUrl = `https://dblportal.com/ref?user=${currentUser.username}`;
             const refElement = document.getElementById('refLink');
             if(refElement) refElement.innerText = refUrl;
@@ -1318,7 +1354,6 @@
                 startSlideTimer();
             }
 
-            // Live withdrawal tax and net calculation listener
             const withdrawInput = document.getElementById('withdraw-amount-input');
             if (withdrawInput) {
                 withdrawInput.addEventListener('input', function() {
@@ -1400,7 +1435,6 @@
                 return;
             }
 
-            // Calculate 17% charges/tax for admin income
             const taxCharges = amount * 0.17;
             const netPayout = amount - taxCharges;
 
@@ -1466,7 +1500,6 @@
             document.getElementById("sidebar").classList.toggle("active");
         }
 
-        // Copy Referral Link Function
         function copyReferralLink() {
             const linkText = document.getElementById('refLink').innerText;
             navigator.clipboard.writeText(linkText).then(() => {
