@@ -831,7 +831,7 @@
                 <div class="balance-card-modern">
                     <div class="balance-card-header">
                         <span class="balance-title">Current Balance</span>
-                        <span class="vip-badge-modern" id="vip-level-badge">VIP 1 Tier</span>
+                        <span class="vip-badge-modern" id="vip-level-badge">VIP 11 Tier</span>
                     </div>
                     <div class="balance-amount-large">$<span id="balance">112.00</span></div>
                     <div class="balance-breakdown">
@@ -840,8 +840,8 @@
                             <div class="val">$<span id="avail-balance">12.00</span></div>
                         </div>
                         <div class="breakdown-item" style="text-align: right;">
-                            <div class="label">Invested Amount</div>
-                            <div class="val">$<span id="invested-amount">0.00</span></div>
+                            <div class="label">Earn Profit</div>
+                            <div class="val">$<span id="earn-profit">0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -962,7 +962,7 @@
         <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 12px; color: #2ea043;">Withdraw Funds</h2>
-            <div class="status-box">Minimum Withdrawal is $90. Note: 17% charges/tax will be applied on withdrawals. Deposited principal cannot be withdrawn.</div>
+            <div class="status-box">Minimum Withdrawal is $90. Note: 17% charges/tax will be applied on withdrawals. Task & referral earnings can be withdrawn freely.</div>
             <div id="withdraw-success" class="success-box hidden"></div>
             <div id="withdraw-error" class="error-box hidden"></div>
             <div class="form-group">
@@ -1060,7 +1060,7 @@
     <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
-            <p id="modal-announcement-text">Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!</p>
+            <p id="modal-announcement-text">Dear user, welcome to DBL! Task & referral earnings can be freely withdrawn. Acha munafa kamayein!</p>
             <button class="btn-full-action" onclick="closeModal()">Continue to Dashboard</button>
         </div>
     </div>
@@ -1150,7 +1150,7 @@
 
             document.getElementById('balance').innerText = totalBalance.toFixed(2);
             document.getElementById('avail-balance').innerText = availableBal.toFixed(2);
-            document.getElementById('invested-amount').innerText = investedAmt.toFixed(2);
+            document.getElementById('earn-profit').innerText = investedAmt.toFixed(2);
             document.getElementById('user-display-name').innerText = currentUser.fullName;
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
