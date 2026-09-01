@@ -975,6 +975,31 @@
             loadUserTransactions();
         }
 
+        // NEW: Backend se user ki latest profile aur balance fetch karne ka function
+        async function fetchUserProfile() {
+            const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
+            if (!currentUsername) return;
+
+            // Agar admin account hai toh skip karein
+            if (currentUsername === "anas_admin") return;
+
+            try {
+                const res = await fetch(`https://dbl-backend.vercel.app/api/admin/users`);
+                const users = await res.json();
+                if (Array.isArray(users)) {
+                    const latestUserData = users.find(u => u.username.toLowerCase() === currentUsername.toLowerCase());
+                    if (latestUserData) {
+                        currentUser.balance = latestUserData.balance;
+                        currentUser.vipLevel = latestUserData.vipLevel || currentUser.vipLevel;
+                        sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
+                        updateUI();
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not fetch latest user profile from backend", err);
+            }
+        }
+
         // Updated loadUserTransactions function jo Deposits aur Withdrawals dono ko fetch karega
         async function loadUserTransactions() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
@@ -987,7 +1012,6 @@
                 
                 const tbody = document.getElementById('user-transactions-table');
                 if (tbody && Array.isArray(data)) {
-                    // Filter ya map kar ke sirf deposits dikhane ke liye ya general transactions ke liye
                     const deposits = data.filter(item => item.type === 'deposit' || !item.type);
                     tbody.innerHTML = deposits.map(item => `
                         <tr>
@@ -1001,7 +1025,7 @@
                 console.warn("Failed to load deposit transactions", tabErr);
             }
 
-            // 2. Load Withdrawals (Updated to use /api/transactions/:username which holds both types)
+            // 2. Load Withdrawals
             try {
                 const resW = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const dataW = await resW.json();
@@ -1188,6 +1212,7 @@
             document.getElementById('menu-toggle-btn').classList.remove('hidden');
 
             updateUI();
+            fetchUserProfile(); // Fetch latest balance immediately after login
             startSlideTimer();
             fetchLatestAnnouncement(); 
             showAnnouncement();
@@ -1213,6 +1238,7 @@
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('menu-toggle-btn').classList.remove('hidden');
                 updateUI();
+                fetchUserProfile(); // Fetch latest balance on page reload
                 startSlideTimer();
                 fetchLatestAnnouncement();
             }
@@ -1368,6 +1394,11 @@
                 document.getElementById(`view-${view}`).classList.add('hidden');
             });
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            // Agar dashboard tab open ho toh latest balance dobara fetch karein
+            if (tabName === 'dashboard') {
+                fetchUserProfile();
+            }
 
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
             toggleSidebar();
