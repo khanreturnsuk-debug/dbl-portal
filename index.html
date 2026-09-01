@@ -1191,6 +1191,7 @@
                     return;
                 }
                 currentUser = matchedUser;
+                // Ensure array fields exist
                 if (!currentUser.deposits) currentUser.deposits = [];
                 if (!currentUser.withdrawals) currentUser.withdrawals = [];
             }
@@ -1218,6 +1219,7 @@
             document.getElementById('menu-toggle-btn').classList.add('hidden');
         }
 
+        // Auto-login check on page refresh
         window.addEventListener('load', () => {
             const savedSession = sessionStorage.getItem('dbl_current_user');
             if (savedSession) {
@@ -1261,41 +1263,24 @@
                 return;
             }
 
-            const depositData = {
-                username: currentUser.username,
+            // Create deposit entry with "Pending" status (Balance won't increase until backend/admin approval)
+            const depositRequest = {
                 method: method,
                 sender: senderInfo,
                 amount: amount,
-                status: "Pending"
+                status: "Pending",
+                date: new Date().toISOString()
             };
 
-            try {
-                const response = await fetch('https://dbl-backend.vercel.app/api/deposit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(depositData)
-                });
+            currentUser.deposits.push(depositRequest);
+            saveAccount(currentUser.username, currentUser);
+            saveAccount(currentUser.email, currentUser);
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    currentUser.deposits.push(depositData);
-                    saveAccount(currentUser.username, currentUser);
-                    
-                    showSuccess('deposit-success', `✔️ Deposit request sent to backend successfully! Status: Pending.`);
-                    document.getElementById('deposit-sender-info').value = '';
-                    document.getElementById('deposit-amount-input').value = '';
-                    updateUI();
-                } else {
-                    alert(result.message || "Failed to submit deposit to backend.");
-                }
-            } catch (err) {
-                console.error("Backend error:", err);
-                currentUser.deposits.push(depositData);
-                saveAccount(currentUser.username, currentUser);
-                showSuccess('deposit-success', `✔️ Deposit request submitted locally (Backend connection failed).`);
-                updateUI();
-            }
+            showSuccess('deposit-success', `✔️ Deposit request submitted successfully! Status: Pending (Waiting for admin approval).`);
+            document.getElementById('deposit-sender-info').value = '';
+            document.getElementById('deposit-amount-input').value = '';
+            
+            updateUI();
         }
 
         async function submitWithdrawal() {
@@ -1318,6 +1303,7 @@
             }
 
             const withdrawData = {
+                userId: currentUser.userId || currentUser.username,
                 username: currentUser.username,
                 method: method,
                 accountNumber: accountNumber,
@@ -1336,10 +1322,13 @@
                 const result = await response.json();
 
                 if (response.ok) {
+                    if (!currentUser.withdrawals) currentUser.withdrawals = [];
                     currentUser.withdrawals.push(withdrawData);
+                    currentUser.balance -= amount; 
                     saveAccount(currentUser.username, currentUser);
+                    saveAccount(currentUser.email, currentUser);
 
-                    showSuccess('withdraw-success', `✔️ Withdrawal request sent to backend successfully! Status: Pending.`);
+                    showSuccess('withdraw-success', `✔️ Withdrawal request sent to backend successfully!`);
                     document.getElementById('withdraw-account-number').value = '';
                     document.getElementById('withdraw-account-name').value = '';
                     document.getElementById('withdraw-amount-input').value = '';
@@ -1349,10 +1338,7 @@
                 }
             } catch (err) {
                 console.error("Backend error:", err);
-                currentUser.withdrawals.push(withdrawData);
-                saveAccount(currentUser.username, currentUser);
-                showSuccess('withdraw-success', `✔️ Withdrawal request submitted locally (Backend connection failed).`);
-                updateUI();
+                showError('withdraw-error', '❌ Network error: Unable to reach backend server.');
             }
         }
 
@@ -1386,6 +1372,7 @@
             document.getElementById('startup-modal').classList.add('hidden');
         }
 
+        // Fetch Dynamic Announcement from Backend Server
         async function fetchLatestAnnouncement() {
             try {
                 const response = await fetch('https://b3f42c9bab63fda1-175-107-227-254.serveousercontent.com/api/announcements');
