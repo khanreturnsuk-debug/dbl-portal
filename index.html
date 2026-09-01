@@ -975,11 +975,12 @@
             loadUserTransactions();
         }
 
-        // Updated function as requested
+        // Updated loadUserTransactions function jo Deposits aur Withdrawals dono ko fetch karega
         async function loadUserTransactions() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
             if (!currentUsername) return;
             
+            // 1. Load Deposits
             try {
                 const res = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const data = await res.json();
@@ -994,8 +995,27 @@
                         </tr>
                     `).join('');
                 }
-            } catch (err) {
-                console.warn("Failed to load user transactions from API", err);
+            } catch (tabErr) {
+                console.warn("Failed to load deposit transactions", tabErr);
+            }
+
+            // 2. Load Withdrawals (Naya addition)
+            try {
+                const resW = await fetch(`https://dbl-backend.vercel.app/api/withdrawals/${currentUsername}`);
+                const dataW = await resW.json();
+                
+                const tbodyW = document.getElementById('withdraw-history-list');
+                if (tbodyW && Array.isArray(dataW)) {
+                    tbodyW.innerHTML = dataW.map(item => `
+                        <tr>
+                            <td>${item.method}</td>
+                            <td>$${item.amount}</td>
+                            <td style="color: ${item.status === 'Approved' ? 'green' : item.status === 'Rejected' ? 'red' : 'orange'}">${item.status}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (errW) {
+                console.warn("Failed to load withdrawal history", errW);
             }
         }
 
@@ -1313,6 +1333,9 @@
                     document.getElementById('withdraw-account-number').value = '';
                     document.getElementById('withdraw-account-name').value = '';
                     document.getElementById('withdraw-amount-input').value = '';
+                    
+                    // Yahan yeh function add kar diya gaya hai
+                    loadUserTransactions();
                 } else {
                     showError('withdraw-error', result.message || "Failed to submit withdrawal to backend.");
                 }
@@ -1321,6 +1344,9 @@
                 document.getElementById('withdraw-account-number').value = '';
                 document.getElementById('withdraw-account-name').value = '';
                 document.getElementById('withdraw-amount-input').value = '';
+                
+                // Offline/Catch block ke andar bhi update ke liye
+                loadUserTransactions();
             }
         }
 
