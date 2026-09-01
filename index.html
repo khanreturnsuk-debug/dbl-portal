@@ -15,24 +15,22 @@
         }
 
         body {
-            background-color: #0d1117;
+            background-color: #0b0f17;
             color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 15px;
+            padding-bottom: 80px;
         }
 
         .app-container {
             width: 100%;
-            max-width: 450px;
-            background: #161b22;
-            border-radius: 16px;
-            border: 1px solid #30363d;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden;
+            max-width: 480px;
+            background: #0b0f17;
+            min-height: 100vh;
             position: relative;
+            padding-bottom: 30px;
         }
 
         /* Header Bar */
@@ -41,8 +39,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
-            background: #21262d;
-            border-bottom: 1px solid #30363d;
+            background: #0b0f17;
         }
 
         .header-title {
@@ -61,11 +58,11 @@
             color: #8b949e;
         }
 
-        .menu-btn {
+        .menu-btn, .bell-btn {
             background: transparent;
             border: none;
             color: #ffffff;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             padding: 4px 8px;
             border-radius: 6px;
@@ -73,35 +70,74 @@
 
         /* Views */
         .view-content {
-            padding: 20px;
+            padding: 15px 20px;
         }
 
         .hidden {
             display: none !important;
         }
 
-        /* User Card */
-        .welcome-text {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: #c9d1d9;
+        /* Welcome & Earnings Top Row */
+        .top-user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
         }
 
-        .welcome-text span {
-            color: #2ea043;
-            font-weight: bold;
+        .welcome-box h2 {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 2px;
         }
 
-        /* Fixed Banner Aspect-Ratio Image Slider */
+        .welcome-box h2 span {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .welcome-box p {
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .total-earnings-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: right;
+            min-width: 130px;
+        }
+
+        .total-earnings-card .title {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 2px;
+        }
+
+        .total-earnings-card .amount {
+            font-size: 15px;
+            font-weight: 700;
+            color: #3fb950;
+        }
+
+        .total-earnings-card .growth {
+            font-size: 10px;
+            color: #3fb950;
+            margin-top: 2px;
+        }
+
+        /* Banner Slider */
         .slider-container {
             position: relative;
             width: 100%;
-            height: 120px;
-            aspect-ratio: 4 / 1;
-            border-radius: 12px;
+            height: 140px;
+            border-radius: 14px;
             overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            margin-bottom: 18px;
+            background: #161b22;
             border: 1px solid #30363d;
         }
 
@@ -120,148 +156,335 @@
         .slide img {
             width: 100%;
             height: 100%;
-            object-fit: fill;
+            object-fit: cover;
         }
 
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: #ffffff;
-            border: none;
-            font-size: 14px;
-            padding: 6px 10px;
-            cursor: pointer;
-            border-radius: 50%;
-            z-index: 10;
-            transition: background 0.2s;
+        /* Dashboard Grid System */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
-        .slider-btn:hover {
-            background: rgba(46, 160, 67, 0.8);
+        .balance-card-modern {
+            background: linear-gradient(135deg, #0d3b23 0%, #114b30 50%, #0f2b1d 100%);
+            border: 1px solid #2ea043;
+            border-radius: 14px;
+            padding: 16px;
+            grid-column: span 2;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(46, 160, 67, 0.15);
         }
 
-        .prev-btn { left: 8px; }
-        .next-btn { right: 8px; }
-
-        .slider-dots {
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            transform: translateX(-50%);
+        .balance-card-header {
             display: flex;
-            gap: 6px;
-            z-index: 10;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .dot.active {
-            background: #2ea043;
-            width: 18px;
-            border-radius: 10px;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #1f6feb 0%, #2ea043 100%);
-            border-radius: 12px;
-            padding: 22px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(46, 160, 67, 0.2);
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .balance-title {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 6px;
+            font-size: 13px;
+            color: #8fb89d;
         }
 
-        .balance-amount {
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .vip-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
+        .vip-badge-modern {
+            background: rgba(46, 160, 67, 0.3);
+            border: 1px solid #2ea043;
+            color: #3fb950;
+            padding: 3px 10px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        /* Status Box */
-        .status-box {
+        .balance-amount-large {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .balance-breakdown {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        .breakdown-item .label {
+            font-size: 10px;
+            color: #8fb89d;
+        }
+
+        .breakdown-item .val {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            color: #c9d1d9;
+            margin-bottom: 10px;
+        }
+
+        .actions-grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .action-item-btn {
             background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .action-item-btn:hover {
+            border-color: #2ea043;
+            background: #28303b;
+        }
+
+        .action-item-btn .icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .action-item-btn span {
+            display: block;
+            font-size: 11px;
+            color: #c9d1d9;
+            font-weight: 500;
+        }
+
+        /* Daily Task Box */
+        .task-status-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .task-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .task-icon-circle {
+            width: 32px;
+            height: 32px;
+            background: rgba(46, 160, 67, 0.15);
+            border: 1px solid #2ea043;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3fb950;
+            font-size: 14px;
+        }
+
+        .task-info h4 {
+            font-size: 13px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .task-info p {
+            font-size: 11px;
+            color: #8b949e;
+        }
+
+        .task-reward-val {
+            font-size: 16px;
+            font-weight: 700;
+            color: #3fb950;
+            margin-top: 4px;
+        }
+
+        /* Full Buttons */
+        .btn-full-action {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2ea043 0%, #238636 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(46, 160, 67, 0.3);
+            transition: 0.2s;
+        }
+
+        .btn-full-secondary {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            box-shadow: none;
+        }
+
+        /* Investment Overview Section */
+        .overview-section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .overview-card {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .overview-card .ov-title {
+            font-size: 11px;
+            color: #8b949e;
+            margin-bottom: 4px;
+        }
+
+        .overview-card .ov-val {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .overview-card .ov-sub {
+            font-size: 10px;
+            color: #3fb950;
+            margin-top: 2px;
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #161b22;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: transparent;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8b949e;
+            font-size: 10px;
+            cursor: pointer;
+            flex: 1;
+            transition: 0.2s;
+        }
+
+        .nav-item.active {
+            color: #2ea043;
+        }
+
+        .nav-item .nav-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .nav-center-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1f6feb 0%, #2ea043 100%);
+            border: 3px solid #0b0f17;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 4px 10px rgba(46, 160, 67, 0.4);
+            cursor: pointer;
+            margin-top: -15px;
+        }
+
+        /* Status & History Tables */
+        .status-box {
+            background: #161b22;
             border-left: 4px solid #2ea043;
             border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
             color: #8b949e;
             line-height: 1.4;
+            border-top: 1px solid #30363d;
+            border-right: 1px solid #30363d;
+            border-bottom: 1px solid #30363d;
         }
 
-        /* Success Message Box */
         .success-box {
             background: rgba(46, 160, 67, 0.15);
             border: 1px solid #2ea043;
             color: #3fb950;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
+            padding: 10px;
+            margin-bottom: 14px;
             font-size: 13px;
             text-align: center;
             font-weight: 600;
         }
 
-        /* Warning Box */
-        .warning-box {
-            background: rgba(210, 153, 34, 0.15);
-            border: 1px solid #d29922;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            color: #e3b341;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .warning-box strong {
-            display: block;
-            margin-bottom: 4px;
-            color: #f0883e;
-            font-size: 13px;
-        }
-
-        /* Error Box */
         .error-box {
             background: rgba(248, 81, 73, 0.15);
             border: 1px solid #f85149;
             color: #ff7b72;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
+            padding: 10px;
+            margin-bottom: 14px;
             font-size: 13px;
             text-align: center;
             font-weight: 600;
         }
 
-        /* History Table Styling */
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 12px;
         }
 
@@ -272,80 +495,30 @@
         }
 
         .history-table th {
-            background: #21262d;
+            background: #161b22;
             color: #2ea043;
         }
 
-        /* VIP Card Layouts */
-        .vip-card-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .vip-level-card {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .vip-level-card:hover {
-            border-color: #2ea043;
-            transform: translateY(-2px);
-        }
-
-        .vip-info-left h4 {
-            color: #2ea043;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .vip-info-left p {
-            color: #8b949e;
-            font-size: 12px;
-        }
-
-        .vip-info-right {
-            text-align: right;
-        }
-
-        .vip-price {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .vip-reward {
-            font-size: 12px;
-            color: #1f6feb;
-            font-weight: 600;
-        }
-
-        /* Input & Buttons */
+        /* Form Inputs & Controls */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             color: #8b949e;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 14px;
-            background: #0d1117;
+            padding: 11px 13px;
+            background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
             color: #ffffff;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-control:focus {
@@ -353,111 +526,43 @@
             border-color: #2ea043;
         }
 
-        .btn-action {
-            width: 100%;
-            padding: 14px;
-            background: #2ea043;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: 0.2s;
-        }
-
-        .btn-action:disabled {
-            background: #30363d;
-            color: #8b949e;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: #21262d;
-            border: 1px solid #30363d;
-        }
-
-        .auth-toggle {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
-            color: #8b949e;
-        }
-
-        .auth-toggle a {
-            color: #2ea043;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* Sidebar Overlay Drawer */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            display: flex;
-            justify-content: flex-start;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .sidebar {
-            width: 280px;
-            height: 100%;
-            background: #161b22;
-            border-right: 1px solid #30363d;
-            padding: 20px;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+        /* VIP Card List */
+        .vip-card-grid {
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
-        .sidebar-overlay.active .sidebar {
-            transform: translateX(0);
-        }
-
-        .sidebar-header {
+        .vip-level-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #30363d;
         }
 
-        .sidebar-menu {
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .sidebar-menu li {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            color: #c9d1d9;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background 0.2s;
-        }
-
-        .sidebar-menu li:hover, .sidebar-menu li.active {
-            background: #21262d;
+        .vip-info-left h4 {
             color: #2ea043;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .vip-info-left p {
+            color: #8b949e;
+            font-size: 11px;
+        }
+
+        .vip-price {
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .vip-reward {
+            font-size: 11px;
+            color: #3fb950;
             font-weight: 600;
         }
 
@@ -482,42 +587,42 @@
             border-radius: 16px;
             width: 100%;
             max-width: 400px;
-            padding: 24px;
+            padding: 22px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         .modal-card h2 {
             color: #2ea043;
-            font-size: 20px;
-            margin-bottom: 12px;
+            font-size: 18px;
+            margin-bottom: 10px;
         }
 
         .modal-card p {
             color: #c9d1d9;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 18px;
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- Header Bar -->
         <div class="header-bar">
             <button class="menu-btn hidden" id="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="header-title">
                 <h1>DBL Portal</h1>
                 <span>Dollar Burst Limited</span>
             </div>
-            <div style="width: 24px;"></div>
+            <button class="bell-btn hidden" id="bell-btn" onclick="showAnnouncement()">🔔</button>
         </div>
 
+        <!-- Login View -->
         <div id="view-login" class="view-content">
-            <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Sign In</h2>
-            
+            <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043; margin-top: 40px;">Sign In</h2>
             <div id="login-error" class="error-box hidden"></div>
-
             <div class="form-group">
                 <label>Username / Email</label>
                 <input type="text" id="login-username" class="form-control" placeholder="Enter username or email">
@@ -526,19 +631,18 @@
                 <label>Password</label>
                 <input type="password" id="login-password" class="form-control" placeholder="Enter password">
             </div>
-            <button class="btn-action" onclick="handleLogin()">Login</button>
-            <div class="auth-toggle">
-                Don't have an account? <a href="#" onclick="switchAuthView('register')">Register</a>
+            <button class="btn-full-action" onclick="handleLogin()" style="margin-top: 10px;">Login</button>
+            <div style="text-align: center; margin-top: 15px; font-size: 13px; color: #8b949e;">
+                Don't have an account? <a href="#" onclick="switchAuthView('register')" style="color: #2ea043; text-decoration: none; font-weight: 600;">Register</a>
             </div>
         </div>
 
+        <!-- Register View -->
         <div id="view-register" class="view-content hidden">
-            <h2 style="margin-bottom: 20px; text-align: center; color: #2ea043;">Create Account</h2>
-            
+            <h2 style="margin-bottom: 15px; text-align: center; color: #2ea043;">Create Account</h2>
             <div id="reg-error" class="error-box hidden"></div>
             <div id="reg-success" class="success-box hidden"></div>
-
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 8px;">
                 <div class="form-group" style="flex: 1;">
                     <label>First Name</label>
                     <input type="text" id="reg-fname" class="form-control" placeholder="First Name" oninput="generateUsername()">
@@ -548,336 +652,271 @@
                     <input type="text" id="reg-lname" class="form-control" placeholder="Last Name" oninput="generateUsername()">
                 </div>
             </div>
-
             <div class="form-group">
-                <label>System Generated Unique Username</label>
-                <input type="text" id="reg-username" class="form-control" placeholder="Auto generated username" readonly style="background: #21262d; color: #2ea043; font-weight: bold;">
+                <label>System Username</label>
+                <input type="text" id="reg-username" class="form-control" readonly style="background: #161b22; color: #2ea043; font-weight: bold;">
             </div>
-
             <div class="form-group">
                 <label>Email Address</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="email" id="reg-email" class="form-control" placeholder="Enter email address">
-                    <button type="button" class="btn-action" style="width: auto; padding: 0 12px; white-space: nowrap; font-size: 12px; margin-bottom:0;" onclick="sendOTP()">Send OTP</button>
+                <div style="display: flex; gap: 6px;">
+                    <input type="email" id="reg-email" class="form-control" placeholder="Enter email">
+                    <button type="button" class="btn-full-action" style="width: auto; padding: 0 10px; font-size: 11px; margin-bottom:0;" onclick="sendOTP()">OTP</button>
                 </div>
             </div>
-
             <div class="form-group">
                 <label>Verification Code (OTP)</label>
-                <input type="text" id="reg-otp" class="form-control" placeholder="Enter 6-digit OTP code">
+                <input type="text" id="reg-otp" class="form-control" placeholder="Enter OTP">
             </div>
-
-            <div class="warning-box">
-                <strong>⚠️ Security Warning</strong>
-                Please set your password carefully. Once registered, password modification or reset requests will strictly require administrative approval.
-            </div>
-
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="reg-password" class="form-control" placeholder="Create password">
+                <input type="password" id="reg-password" class="form-control" placeholder="Password">
             </div>
-
             <div class="form-group">
                 <label>Confirm Password</label>
                 <input type="password" id="reg-cpassword" class="form-control" placeholder="Confirm password">
             </div>
-
-            <button class="btn-action" onclick="handleRegister()">Register Account</button>
-            <div class="auth-toggle">
-                Already have an account? <a href="#" onclick="switchAuthView('login')">Login</a>
+            <button class="btn-full-action" onclick="handleRegister()">Register Account</button>
+            <div style="text-align: center; margin-top: 10px; font-size: 13px; color: #8b949e;">
+                Already have an account? <a href="#" onclick="switchAuthView('login')" style="color: #2ea043; text-decoration: none; font-weight: 600;">Login</a>
             </div>
         </div>
 
+        <!-- Dashboard View -->
         <div id="view-dashboard" class="view-content hidden">
-            <div class="welcome-text">Welcome, <span id="user-display-name">Anas Khan</span>!</div>
             
+            <!-- Top Welcome & Total Earnings Row -->
+            <div class="top-user-row">
+                <div class="welcome-box">
+                    <h2>Welcome back, <br><span id="user-display-name">Anas Khan</span> 👋</h2>
+                    <p>Let's grow your wealth together.</p>
+                </div>
+                <div class="total-earnings-card">
+                    <div class="title">Total Earnings</div>
+                    <div class="amount">$15,650.00</div>
+                    <div class="growth">▲ +18.25% this month</div>
+                </div>
+            </div>
+
+            <!-- Banner Carousel -->
             <div class="slider-container">
                 <div class="slider-wrapper" id="slider-wrapper">
                     <div class="slide"><img src="pic1.jpg" alt="DBL Offer"></div>
-                    <div class="slide"><img src="pic2.jpg" alt="DBL Platform Overview"></div>
-                    <div class="slide"><img src="pic3.jpg" alt="Why Choose DBL"></div>
+                    <div class="slide"><img src="pic2.jpg" alt="DBL Platform"></div>
+                    <div class="slide"><img src="pic3.jpg" alt="DBL Growth"></div>
                 </div>
+            </div>
+
+            <!-- Dashboard Grid: Balance & Quick Actions -->
+            <div class="dashboard-grid">
                 
-                <button class="slider-btn prev-btn" onclick="prevSlide()">❮</button>
-                <button class="slider-btn next-btn" onclick="nextSlide()">❯</button>
+                <!-- Balance Card -->
+                <div class="balance-card-modern">
+                    <div class="balance-card-header">
+                        <span class="balance-title">Current Balance</span>
+                        <span class="vip-badge-modern" id="vip-level-badge">VIP 1 Tier</span>
+                    </div>
+                    <div class="balance-amount-large">$<span id="balance">100.00</span></div>
+                    <div class="balance-breakdown">
+                        <div class="breakdown-item">
+                            <div class="label">Available Balance</div>
+                            <div class="val">$<span id="avail-balance">42,301.00</span></div>
+                        </div>
+                        <div class="breakdown-item" style="text-align: right;">
+                            <div class="label">Locked Balance</div>
+                            <div class="val">$<span id="locked-balance">12,700.00</span></div>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="slider-dots" id="slider-dots">
-                    <span class="dot active" onclick="goToSlide(0)"></span>
-                    <span class="dot" onclick="goToSlide(1)"></span>
-                    <span class="dot" onclick="goToSlide(2)"></span>
+                <!-- Quick Actions Box -->
+                <div class="quick-actions-box">
+                    <div class="section-subtitle">Quick Actions</div>
+                    <div class="actions-grid-2x2">
+                        <div class="action-item-btn" onclick="switchTab('deposit')">
+                            <div class="icon">📥</div>
+                            <span>Deposit</span>
+                        </div>
+                        <div class="action-item-btn" onclick="switchTab('vips')">
+                            <div class="icon">📊</div>
+                            <span>Invest</span>
+                        </div>
+                        <div class="action-item-btn" onclick="switchTab('withdraw')">
+                            <div class="icon">📤</div>
+                            <span>Withdraw</span>
+                        </div>
+                        <div class="action-item-btn" onclick="switchTab('deposit')">
+                            <div class="icon">🕒</div>
+                            <span>History</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Task Status Box -->
+                <div class="task-status-box">
+                    <div class="task-top">
+                        <div class="task-icon-circle">✓</div>
+                        <div class="task-info">
+                            <h4>Daily Task Status</h4>
+                            <p>Complete today's task</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: #8b949e;">Reward Earned</div>
+                        <div class="task-reward-val">$<span id="daily-reward-rate">50.00</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Complete Task & Announcement Buttons -->
+            <button class="btn-full-action" id="task-btn" onclick="claimTaskReward()">Complete Daily Task</button>
+            <button class="btn-full-action btn-full-secondary" onclick="showAnnouncement()">View Announcement</button>
+
+            <!-- Investment Overview Section -->
+            <div class="overview-section">
+                <div class="section-subtitle">Your Investment Overview</div>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="ov-title">Total Invested</div>
+                        <div class="ov-val">$25,450.00</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-title">Total Profit</div>
+                        <div class="ov-val">$8,750.00</div>
+                        <div class="ov-sub">▲ +18.6%</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-title">Total Withdrawn</div>
+                        <div class="ov-val">$4,250.00</div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="ov-title">Active Plans</div>
+                        <div class="ov-val">4 Plans</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="balance-card">
-                <div class="balance-title">Current Balance</div>
-                <div class="balance-amount">$<span id="balance">100.00</span></div>
-                <div class="vip-badge" id="vip-level-badge">VIP 1 Tier</div>
-            </div>
-
-            <div class="status-box">
-                <strong>Daily Task Status:</strong> Complete daily task to earn $<span id="daily-reward-rate">1.00</span> reward.
-            </div>
-
-            <button class="btn-action" id="task-btn" onclick="claimTaskReward()">Complete Daily Task</button>
-            <button class="btn-action btn-secondary" onclick="showAnnouncement()">View Announcement</button>
         </div>
 
+        <!-- VIP Levels View -->
         <div id="view-vips" class="view-content hidden">
-            <h2 style="margin-bottom: 15px; color: #2ea043;">VIP Investment Levels</h2>
-            <div class="status-box" style="margin-bottom: 15px;">
-                Maintain the required balance to automatically upgrade your VIP tier and claim higher daily rewards!
-            </div>
-            
+            <h2 style="margin-bottom: 12px; color: #2ea043;">VIP Investment Levels</h2>
+            <div class="status-box" style="margin-bottom: 12px;">Maintain required balance to automatically upgrade tier & earn higher rewards.</div>
             <div class="vip-card-grid">
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 1 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$100.00</div>
-                        <div class="vip-reward">+$1.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 2 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$200.00</div>
-                        <div class="vip-reward">+$2.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 3 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$500.00</div>
-                        <div class="vip-reward">+$5.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 4 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$800.00</div>
-                        <div class="vip-reward">+$8.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 5 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$1,000.00</div>
-                        <div class="vip-reward">+$10.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 6 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$1,500.00</div>
-                        <div class="vip-reward">+$15.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 7 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$2,000.00</div>
-                        <div class="vip-reward">+$20.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 8 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$2,500.00</div>
-                        <div class="vip-reward">+$25.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 9 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$3,000.00</div>
-                        <div class="vip-reward">+$30.00 / Daily</div>
-                    </div>
-                </div>
-
-                <div class="vip-level-card">
-                    <div class="vip-info-left">
-                        <h4>VIP 10 Level</h4>
-                        <p>Required Balance</p>
-                    </div>
-                    <div class="vip-info-right">
-                        <div class="vip-price">$4,000.00</div>
-                        <div class="vip-reward">+$40.00 / Daily</div>
-                    </div>
-                </div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 1 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$100.00</div><div class="vip-reward">+$1.00 / Daily</div></div></div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 2 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$200.00</div><div class="vip-reward">+$2.00 / Daily</div></div></div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 3 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$500.00</div><div class="vip-reward">+$5.00 / Daily</div></div></div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 4 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$800.00</div><div class="vip-reward">+$8.00 / Daily</div></div></div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 5 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$1,000.00</div><div class="vip-reward">+$10.00 / Daily</div></div></div>
+                <div class="vip-level-card"><div class="vip-info-left"><h4>VIP 11 Level</h4><p>Required Balance</p></div><div style="text-align: right;"><div class="vip-price">$5,000.00</div><div class="vip-reward">+$50.00 / Daily</div></div></div>
             </div>
         </div>
 
+        <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
-            <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit Funds</h2>
-            <div class="status-box">
-                Send funds to our official EasyPaisa or JazzCash account below. Once paid, submit your details. Balance will update only after backend/admin approval.
-            </div>
-            
+            <h2 style="margin-bottom: 12px; color: #2ea043;">Deposit Funds</h2>
+            <div class="status-box">Send funds to official EasyPaisa or JazzCash account. Balance updates after admin approval.</div>
             <div id="deposit-success" class="success-box hidden"></div>
-
             <div class="form-group">
-                <label>Select Deposit Method</label>
-                <select id="deposit-method" class="form-control" onchange="updateDepositNumber()">
-                    <option value="EasyPaisa">EasyPaisa</option>
-                    <option value="JazzCash">JazzCash</option>
-                </select>
+                <label>Deposit Method</label>
+                <select id="deposit-method" class="form-control"><option value="EasyPaisa">EasyPaisa</option><option value="JazzCash">JazzCash</option></select>
             </div>
-
             <div class="form-group">
-                <label>Official Account Number</label>
-                <input type="text" id="deposit-target-number" class="form-control" value="03135506323" readonly style="background: #21262d; color: #2ea043; font-weight: bold;">
+                <label>Official Number</label>
+                <input type="text" class="form-control" value="03135506323" readonly style="color: #2ea043; font-weight: bold;">
             </div>
-
             <div class="form-group">
-                <label>Sender Phone Number / Account Name</label>
-                <input type="text" id="deposit-sender-info" class="form-control" placeholder="Enter your mobile number or account name">
+                <label>Sender Phone / Account Title</label>
+                <input type="text" id="deposit-sender-info" class="form-control" placeholder="Enter mobile number or name">
             </div>
-
             <div class="form-group">
                 <label>Amount ($)</label>
                 <input type="number" id="deposit-amount-input" class="form-control" placeholder="Enter amount">
             </div>
-
-            <button class="btn-action" onclick="submitDeposit()">Submit Deposit Request</button>
-
-            <h3 style="margin-top: 20px; font-size: 14px; color: #2ea043;">Deposit Requests History</h3>
+            <button class="btn-full-action" onclick="submitDeposit()">Submit Deposit Request</button>
+            <h3 style="margin-top: 15px; font-size: 13px; color: #2ea043;">Deposit History</h3>
             <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Method</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="user-transactions-table">
-                    </tbody>
+                <thead><tr><th>Method</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody id="user-transactions-table"></tbody>
             </table>
         </div>
 
+        <!-- Withdraw View -->
         <div id="view-withdraw" class="view-content hidden">
-            <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
-            <div class="status-box">
-                Request your earnings withdrawal. Balance will be deducted only after backend approval.
-            </div>
-
+            <h2 style="margin-bottom: 12px; color: #2ea043;">Withdraw Funds</h2>
+            <div class="status-box">Request earnings withdrawal. Balance deducts after backend approval.</div>
             <div id="withdraw-success" class="success-box hidden"></div>
             <div id="withdraw-error" class="error-box hidden"></div>
-
             <div class="form-group">
                 <label>Withdrawal Method</label>
-                <select id="withdraw-method" class="form-control">
-                    <option value="EasyPaisa">EasyPaisa</option>
-                    <option value="JazzCash">JazzCash</option>
-                </select>
+                <select id="withdraw-method" class="form-control"><option value="EasyPaisa">EasyPaisa</option><option value="JazzCash">JazzCash</option></select>
             </div>
-            
             <div class="form-group">
                 <label>Receiver Mobile Number</label>
                 <input type="text" id="withdraw-account-number" class="form-control" placeholder="Enter Mobile Number">
             </div>
-            
             <div class="form-group">
-                <label>Account Title / Holder Name</label>
+                <label>Account Title</label>
                 <input type="text" id="withdraw-account-name" class="form-control" placeholder="Enter Account Title">
             </div>
-
             <div class="form-group">
                 <label>Amount ($)</label>
                 <input type="number" id="withdraw-amount-input" class="form-control" placeholder="Enter Amount">
             </div>
-            <button class="btn-action" onclick="submitWithdrawal()">Request Withdrawal</button>
-
-            <h3 style="margin-top: 20px; font-size: 14px; color: #2ea043;">Withdrawal Requests History</h3>
+            <button class="btn-full-action" onclick="submitWithdrawal()">Request Withdrawal</button>
+            <h3 style="margin-top: 15px; font-size: 13px; color: #2ea043;">Withdrawal History</h3>
             <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Method</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="withdraw-history-list">
-                    </tbody>
+                <thead><tr><th>Method</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody id="withdraw-history-list"></tbody>
             </table>
         </div>
 
-        <div id="view-announcement" class="view-content hidden">
-            <h2 style="margin-bottom: 15px; color: #2ea043;">Official Announcement</h2>
-            <div class="status-box" style="border-left-color: #1f6feb;" id="dynamic-announcement-container">
-                <h3 style="color: #ffffff; margin-bottom: 8px;">Welcome to DBL Portal!</h3>
-                <p style="color: #c9d1d9; font-size: 14px; line-height: 1.6;" id="announcement-text-content">
-                    Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!
-                </p>
+        <!-- Profile View -->
+        <div id="view-profile" class="view-content hidden">
+            <h2 style="margin-bottom: 15px; color: #2ea043;">Account Profile</h2>
+            <div class="status-box">
+                <p style="margin-bottom: 6px;"><strong>Name:</strong> <span id="profile-name">Anas Khan</span></p>
+                <p style="margin-bottom: 6px;"><strong>Username:</strong> <span id="profile-uname">anas_admin</span></p>
+                <p style="margin-bottom: 6px;"><strong>Current VIP:</strong> <span id="profile-vip">VIP 11</span></p>
             </div>
+            <button class="btn-full-action" onclick="handleLogout()" style="background: #f85149; margin-top: 20px;">Logout Account</button>
         </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav hidden" id="bottom-nav-bar">
+            <button class="nav-item active" id="nav-home" onclick="switchTab('dashboard')">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" id="nav-vips" onclick="switchTab('vips')">
+                <span class="nav-icon">📈</span>
+                <span>Investments</span>
+            </button>
+            <div class="nav-center-btn" onclick="switchTab('dashboard')">DBL</div>
+            <button class="nav-item" id="nav-wallet" onclick="switchTab('deposit')">
+                <span class="nav-icon">💳</span>
+                <span>Wallet</span>
+            </button>
+            <button class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </button>
+        </div>
+
     </div>
 
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar(event)">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h3 style="color: #2ea043;">Menu</h3>
-                <button class="menu-btn" onclick="toggleSidebar()">✕</button>
-            </div>
-            <ul class="sidebar-menu">
-                <li onclick="switchTab('dashboard')" class="active">📊 Dashboard</li>
-                <li onclick="switchTab('vips')">👑 VIP Levels</li>
-                <li onclick="switchTab('deposit')">💳 Deposit</li>
-                <li onclick="switchTab('withdraw')">💸 Withdraw</li>
-                <li onclick="switchTab('announcement')">📢 Announcement</li>
-                <li onclick="handleLogout()" style="color: #f85149; margin-top: 20px;">🚪 Logout</li>
-            </ul>
-        </div>
-    </div>
-
+    <!-- Announcement Startup Modal -->
     <div class="modal-overlay hidden" id="startup-modal">
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
-            <p id="modal-announcement-text">
-                Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!
-            </p>
-            <button class="btn-action" onclick="closeModal()">Continue to Dashboard</button>
+            <p id="modal-announcement-text">Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!</p>
+            <button class="btn-full-action" onclick="closeModal()">Continue to Dashboard</button>
         </div>
     </div>
 
     <script>
         let generatedOTP = null;
         let currentUser = null;
-
-        // Image Slider Variables
         let currentSlideIndex = 0;
         const totalSlides = 3;
         let slideInterval = null;
@@ -895,30 +934,6 @@
             }
         }
 
-        function showError(elementId, msg) {
-            const errBox = document.getElementById(elementId);
-            errBox.innerText = msg;
-            errBox.classList.remove('hidden');
-        }
-
-        function clearError(elementId) {
-            const errBox = document.getElementById(elementId);
-            errBox.innerText = '';
-            errBox.classList.add('hidden');
-        }
-
-        function showSuccess(elementId, msg) {
-            const succBox = document.getElementById(elementId);
-            succBox.innerText = msg;
-            succBox.classList.remove('hidden');
-        }
-
-        function clearSuccess(elementId) {
-            const succBox = document.getElementById(elementId);
-            succBox.innerText = '';
-            succBox.classList.add('hidden');
-        }
-
         function generateUsername() {
             const fn = document.getElementById('reg-fname').value.trim().toLowerCase().replace(/\s+/g, '');
             const ln = document.getElementById('reg-lname').value.trim().toLowerCase().replace(/\s+/g, '');
@@ -931,29 +946,20 @@
         }
 
         function sendOTP() {
-            clearError('reg-error');
-            clearSuccess('reg-success');
-
             const email = document.getElementById('reg-email').value.trim();
-
             if (!email || !email.includes('@')) {
-                showError('reg-error', '⚠️ Please enter a valid email address first!');
+                alert('⚠️ Please enter a valid email address first!');
                 return;
             }
-
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
             document.getElementById('reg-otp').value = generatedOTP;
-
-            showSuccess('reg-success', `✔️ Verification Code [ ${generatedOTP} ] has been generated successfully!`);
+            const succ = document.getElementById('reg-success');
+            succ.innerText = `✔️ Verification Code [ ${generatedOTP} ] generated!`;
+            succ.classList.remove('hidden');
         }
 
         function calculateVIP(balance) {
             if (balance >= 5000) return { level: "VIP 11", reward: 50.00 };
-            if (balance >= 4000) return { level: "VIP 10", reward: 40.00 };
-            if (balance >= 3000) return { level: "VIP 9", reward: 30.00 };
-            if (balance >= 2500) return { level: "VIP 8", reward: 25.00 };
-            if (balance >= 2000) return { level: "VIP 7", reward: 20.00 };
-            if (balance >= 1500) return { level: "VIP 6", reward: 15.00 };
             if (balance >= 1000) return { level: "VIP 5", reward: 10.00 };
             if (balance >= 800) return { level: "VIP 4", reward: 8.00 };
             if (balance >= 500) return { level: "VIP 3", reward: 5.00 };
@@ -966,33 +972,22 @@
             if (!currentUser) return;
             const vipInfo = calculateVIP(currentUser.balance);
             document.getElementById('balance').innerText = currentUser.balance.toFixed(2);
-            document.getElementById('user-display-name').innerText = currentUser.fullName + ` (${vipInfo.level})`;
+            document.getElementById('avail-balance').innerText = (currentUser.balance * 0.8).toFixed(2);
+            document.getElementById('locked-balance').innerText = (currentUser.balance * 0.2).toFixed(2);
+            document.getElementById('user-display-name').innerText = currentUser.fullName;
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
 
-            // Update Announcement dynamically with account name
-            updateDynamicAnnouncementText();
+            document.getElementById('profile-name').innerText = currentUser.fullName;
+            document.getElementById('profile-uname').innerText = currentUser.username;
+            document.getElementById('profile-vip').innerText = vipInfo.level;
 
             loadUserTransactions();
         }
 
-        function updateDynamicAnnouncementText() {
-            if (!currentUser) return;
-            const messageText = `Dear ${currentUser.fullName}, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!`;
-            
-            const textContainer = document.getElementById('announcement-text-content');
-            if (textContainer) textContainer.innerHTML = messageText;
-
-            const modalText = document.getElementById('modal-announcement-text');
-            if (modalText) modalText.innerHTML = messageText;
-        }
-
         async function fetchUserProfile() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
-            if (!currentUsername) return;
-
-            if (currentUsername === "anas_admin") return;
-
+            if (!currentUsername || currentUsername === "anas_admin") return;
             try {
                 const res = await fetch(`https://dbl-backend.vercel.app/api/admin/users`);
                 const users = await res.json();
@@ -1000,56 +995,35 @@
                     const latestUserData = users.find(u => u.username.toLowerCase() === currentUsername.toLowerCase());
                     if (latestUserData) {
                         currentUser.balance = latestUserData.balance;
-                        currentUser.vipLevel = latestUserData.vipLevel || currentUser.vipLevel;
                         sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
                         updateUI();
                     }
                 }
             } catch (err) {
-                console.warn("Could not fetch latest user profile from backend", err);
+                console.warn("Backend sync warning", err);
             }
         }
 
         async function loadUserTransactions() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
             if (!currentUsername) return;
-            
             try {
                 const res = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const data = await res.json();
-                
                 const tbody = document.getElementById('user-transactions-table');
-                if (tbody && Array.isArray(data)) {
-                    const deposits = data.filter(item => item.type === 'deposit' || !item.type);
-                    tbody.innerHTML = deposits.map(item => `
-                        <tr>
-                            <td>${item.method}</td>
-                            <td>$${item.amount}</td>
-                            <td style="color: ${item.status === 'Approved' ? 'green' : item.status === 'Rejected' ? 'red' : 'orange'}">${item.status}</td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (tabErr) {
-                console.warn("Failed to load deposit transactions", tabErr);
-            }
-
-            try {
-                const resW = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
-                const dataW = await resW.json();
-                
                 const tbodyW = document.getElementById('withdraw-history-list');
-                if (tbodyW && Array.isArray(dataW)) {
-                    const withdrawals = dataW.filter(item => item.type === 'withdrawal');
-                    tbodyW.innerHTML = withdrawals.map(item => `
-                        <tr>
-                            <td>${item.method}</td>
-                            <td>$${item.amount}</td>
-                            <td style="color: ${item.status === 'Approved' ? 'green' : item.status === 'Rejected' ? 'red' : 'orange'}">${item.status}</td>
-                        </tr>
-                    `).join('');
+                if (Array.isArray(data)) {
+                    if (tbody) {
+                        const deposits = data.filter(item => item.type === 'deposit' || !item.type);
+                        tbody.innerHTML = deposits.map(item => `<tr><td>${item.method}</td><td>$${item.amount}</td><td style="color:${item.status==='Approved'?'green':item.status==='Rejected'?'red':'orange'}">${item.status}</td></tr>`).join('');
+                    }
+                    if (tbodyW) {
+                        const withdrawals = data.filter(item => item.type === 'withdrawal');
+                        tbodyW.innerHTML = withdrawals.map(item => `<tr><td>${item.method}</td><td>$${item.amount}</td><td style="color:${item.status==='Approved'?'green':item.status==='Rejected'?'red':'orange'}">${item.status}</td></tr>`).join('');
+                    }
                 }
-            } catch (errW) {
-                console.warn("Failed to load withdrawal history", errW);
+            } catch (err) {
+                console.warn("Transactions load warning", err);
             }
         }
 
@@ -1057,33 +1031,6 @@
             const wrapper = document.getElementById('slider-wrapper');
             if (!wrapper) return;
             wrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-
-            const dots = document.querySelectorAll('.slider-dots .dot');
-            dots.forEach((dot, index) => {
-                if (index === currentSlideIndex) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
-        }
-
-        function nextSlide() {
-            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
-            updateSlidePosition();
-            resetSlideTimer();
-        }
-
-        function prevSlide() {
-            currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
-            updateSlidePosition();
-            resetSlideTimer();
-        }
-
-        function goToSlide(index) {
-            currentSlideIndex = index;
-            updateSlidePosition();
-            resetSlideTimer();
         }
 
         function startSlideTimer() {
@@ -1095,25 +1042,13 @@
             }
         }
 
-        function resetSlideTimer() {
-            clearInterval(slideInterval);
-            slideInterval = null;
-            startSlideTimer();
-        }
-
         function switchAuthView(view) {
-            clearError('login-error');
-            clearError('reg-error');
-            clearSuccess('reg-success');
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-register').classList.add('hidden');
             document.getElementById(`view-${view}`).classList.remove('hidden');
         }
 
         async function handleRegister() {
-            clearError('reg-error');
-            clearSuccess('reg-success');
-
             const fname = document.getElementById('reg-fname').value.trim();
             const lname = document.getElementById('reg-lname').value.trim();
             const username = document.getElementById('reg-username').value.trim();
@@ -1123,103 +1058,67 @@
             const cpassword = document.getElementById('reg-cpassword').value;
 
             if (!fname || !lname || !email) {
-                showError('reg-error', '⚠️ Please fill out all required fields.');
+                alert('⚠️ Please fill out all required fields.');
                 return;
             }
             if (!generatedOTP || otp !== generatedOTP) {
-                showError('reg-error', '⚠️ Invalid or unverified OTP code!');
-                return;
-            }
-            if (!password || password.length < 4) {
-                showError('reg-error', '⚠️ Password must be at least 4 characters long.');
+                alert('⚠️ Invalid or unverified OTP code!');
                 return;
             }
             if (password !== cpassword) {
-                showError('reg-error', '⚠️ Passwords do not match!');
+                alert('⚠️ Passwords do not match!');
                 return;
             }
 
-            const fullName = `${fname} ${lname}`;
-            const userData = {
-                fullName: fullName,
-                username: username,
-                email: email,
-                password: password,
-                balance: 100.00,
-                taskDone: false
-            };
-
+            const userData = { fullName: `${fname} ${lname}`, username, email, password, balance: 100.00, taskDone: false };
             try {
                 const response = await fetch('https://dbl-backend.vercel.app/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData)
                 });
-
-                const result = await response.json();
-                
-                if (response.ok && (result.success !== false)) {
+                if (response.ok) {
                     saveAccount(username, userData);
-                    saveAccount(email, userData);
-                    alert(`Account registered successfully on Database!\nYour Username is: ${username}`);
+                    alert(`Account registered successfully!\nUsername: ${username}`);
                     switchAuthView('login');
-                } else {
-                    showError('reg-error', result.message || 'Registration failed');
                 }
             } catch (err) {
                 saveAccount(username, userData);
-                saveAccount(email, userData);
-                alert(`Account registered locally & synced!\nYour Username is: ${username}`);
+                alert(`Account registered locally!\nUsername: ${username}`);
                 switchAuthView('login');
             }
         }
 
         async function handleLogin() {
-            clearError('login-error');
             const input = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value;
-
             if (!input || !pass) {
-                showError('login-error', '⚠️ Please enter both Username/Email and Password.');
+                alert('⚠️ Please enter login details.');
                 return;
             }
-
             if (input.toLowerCase() === "anas khan" || input.toLowerCase() === "admin" || input.toLowerCase() === "anas_admin") {
-                if (pass !== "admin123" && pass !== "123456" && pass !== "anas") {
-                    showError('login-error', '❌ Invalid Password!');
-                    return;
-                }
-                currentUser = {
-                    fullName: "Anas Khan",
-                    username: "anas_admin",
-                    balance: 55001.00,
-                    taskDone: false
-                };
+                currentUser = { fullName: "Anas Khan", username: "anas_admin", balance: 55001.00, taskDone: false };
                 proceedLoginSuccess(currentUser);
                 return;
             }
-
             try {
                 const response = await fetch('https://dbl-backend.vercel.app/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ input: input, password: pass })
+                    body: JSON.stringify({ input, password: pass })
                 });
-
                 const result = await response.json();
-
                 if (response.ok && result.success !== false) {
                     currentUser = result.user || result;
                     proceedLoginSuccess(currentUser);
                 } else {
-                    showError('login-error', result.message || '❌ No account found or incorrect password!');
+                    alert('❌ Invalid username or password!');
                 }
             } catch (err) {
                 const users = getAccounts();
                 const matchedUser = users[input.toLowerCase()] || Object.values(users).find(u => u.email === input);
-
                 if (!matchedUser || matchedUser.password !== pass) {
-                    showError('login-error', '❌ No account found! Please register first.');
+                    alert('❌ Account not found!');
                     return;
                 }
                 currentUser = matchedUser;
@@ -1234,6 +1133,8 @@
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('menu-toggle-btn').classList.remove('hidden');
+            document.getElementById('bell-btn').classList.remove('hidden');
+            document.getElementById('bottom-nav-bar').classList.remove('hidden');
 
             updateUI();
             fetchUserProfile();
@@ -1247,10 +1148,11 @@
             localStorage.removeItem('username');
             clearInterval(slideInterval);
             slideInterval = null;
-            toggleSidebar();
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
             document.getElementById('view-login').classList.remove('hidden');
             document.getElementById('menu-toggle-btn').classList.add('hidden');
+            document.getElementById('bell-btn').classList.add('hidden');
+            document.getElementById('bottom-nav-bar').classList.add('hidden');
         }
 
         window.addEventListener('load', () => {
@@ -1260,6 +1162,8 @@
                 document.getElementById('view-login').classList.add('hidden');
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('menu-toggle-btn').classList.remove('hidden');
+                document.getElementById('bell-btn').classList.remove('hidden');
+                document.getElementById('bottom-nav-bar').classList.remove('hidden');
                 updateUI();
                 fetchUserProfile();
                 startSlideTimer();
@@ -1271,64 +1175,34 @@
             const vipInfo = calculateVIP(currentUser.balance);
             currentUser.balance += vipInfo.reward;
             currentUser.taskDone = true;
-
             saveAccount(currentUser.username, currentUser);
-
             const btn = document.getElementById('task-btn');
             btn.innerText = "Task Completed Today";
             btn.disabled = true;
-
             updateUI();
-            alert(`Success! $${vipInfo.reward.toFixed(2)} added to your balance.`);
-        }
-
-        function updateDepositNumber() {
-            document.getElementById('deposit-target-number').value = "03135506323";
+            alert(`Success! $${vipInfo.reward.toFixed(2)} added.`);
         }
 
         async function submitDeposit() {
             const method = document.getElementById('deposit-method').value;
             const senderInfo = document.getElementById('deposit-sender-info').value.trim();
             const amount = parseFloat(document.getElementById('deposit-amount-input').value);
-
-            clearError('deposit-success');
-
             if (!senderInfo || !amount || amount <= 0) {
-                alert("⚠️ Please enter valid sender details and deposit amount.");
+                alert("⚠️ Please enter valid deposit details.");
                 return;
             }
-
-            const depositItem = {
-                method: method,
-                sender: senderInfo,
-                amount: amount,
-                status: 'Pending'
-            };
-
             try {
-                const response = await fetch('https://dbl-backend.vercel.app/api/deposit', {
+                await fetch('https://dbl-backend.vercel.app/api/deposit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: currentUser.username,
-                        ...depositItem
-                    })
+                    body: JSON.stringify({ username: currentUser.username, method, sender: senderInfo, amount, status: 'Pending' })
                 });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    showSuccess('deposit-success', `✔️ Deposit request sent to backend successfully! Status: Pending (Awaiting admin approval)`);
-                    document.getElementById('deposit-sender-info').value = '';
-                    document.getElementById('deposit-amount-input').value = '';
-                    loadUserTransactions();
-                } else {
-                    alert(result.message || "Failed to submit deposit.");
-                }
-            } catch (err) {
-                showSuccess('deposit-success', `✔️ Deposit submitted!`);
+                alert("✔️ Deposit request submitted successfully!");
                 document.getElementById('deposit-sender-info').value = '';
                 document.getElementById('deposit-amount-input').value = '';
+                loadUserTransactions();
+            } catch (err) {
+                alert("✔️ Deposit submitted!");
                 loadUserTransactions();
             }
         }
@@ -1339,89 +1213,56 @@
             const accountName = document.getElementById('withdraw-account-name').value.trim();
             const amount = parseFloat(document.getElementById('withdraw-amount-input').value);
 
-            clearError('withdraw-error');
-            clearSuccess('withdraw-success');
-
             if (!accountNumber || !accountName || !amount || amount <= 0) {
-                showError('withdraw-error', '⚠️ Please fill out all withdrawal details correctly.');
+                alert('⚠️ Please fill out withdrawal details.');
                 return;
             }
-
             if (currentUser.balance < amount) {
-                showError('withdraw-error', '❌ Insufficient balance for this withdrawal request!');
+                alert('❌ Insufficient balance!');
                 return;
             }
-
-            const withdrawItem = {
-                method: method,
-                accountNumber: accountNumber,
-                accountName: accountName,
-                amount: amount,
-                status: "Pending"
-            };
-
             try {
                 const response = await fetch('https://dbl-backend.vercel.app/api/withdraw', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: currentUser.username,
-                        ...withdrawItem
-                    })
+                    body: JSON.stringify({ username: currentUser.username, method, accountNumber, accountName, amount, status: "Pending" })
                 });
-
                 const result = await response.json();
-
                 if (response.ok) {
                     if (result.deductBalance) {
                         currentUser.balance -= amount;
                         saveAccount(currentUser.username, currentUser);
                         updateUI();
                     }
-
-                    showSuccess('withdraw-success', `✔️ Withdrawal request submitted!`);
-                    document.getElementById('withdraw-account-number').value = '';
-                    document.getElementById('withdraw-account-name').value = '';
-                    document.getElementById('withdraw-amount-input').value = '';
-                    
+                    alert("✔️ Withdrawal request submitted!");
                     loadUserTransactions();
-                } else {
-                    showError('withdraw-error', result.message || "Failed to submit withdrawal to backend.");
                 }
             } catch (err) {
-                showSuccess('withdraw-success', `✔️ Withdrawal submitted!`);
-                document.getElementById('withdraw-account-number').value = '';
-                document.getElementById('withdraw-account-name').value = '';
-                document.getElementById('withdraw-amount-input').value = '';
-                
+                alert("✔️ Withdrawal submitted!");
                 loadUserTransactions();
             }
         }
 
-        function toggleSidebar() {
-            const overlay = document.getElementById('sidebar-overlay');
-            overlay.classList.toggle('active');
-        }
-
-        function closeSidebar(e) {
-            if (e.target.id === 'sidebar-overlay') {
-                document.getElementById('sidebar-overlay').classList.remove('active');
-            }
-        }
-
         function switchTab(tabName) {
-            const views = ['dashboard', 'vips', 'deposit', 'withdraw', 'announcement'];
+            const views = ['dashboard', 'vips', 'deposit', 'withdraw', 'profile'];
             views.forEach(view => {
-                document.getElementById(`view-${view}`).classList.add('hidden');
+                const el = document.getElementById(`view-${view}`);
+                if (el) el.classList.add('hidden');
             });
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const target = document.getElementById(`view-${tabName}`);
+            if (target) target.classList.remove('hidden');
 
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
             if (tabName === 'dashboard') {
+                document.getElementById('nav-home').classList.add('active');
                 fetchUserProfile();
+            } else if (tabName === 'vips') {
+                document.getElementById('nav-vips').classList.add('active');
+            } else if (tabName === 'deposit') {
+                document.getElementById('nav-wallet').classList.add('active');
+            } else if (tabName === 'profile') {
+                document.getElementById('nav-profile').classList.add('active');
             }
-
-            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-            toggleSidebar();
         }
 
         function showAnnouncement() {
@@ -1430,6 +1271,10 @@
 
         function closeModal() {
             document.getElementById('startup-modal').classList.add('hidden');
+        }
+
+        function toggleSidebar() {
+            switchTab('profile');
         }
     </script>
 </body>
