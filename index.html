@@ -939,49 +939,51 @@
         }
 
         function handleLogin() {
-            clearError('login-error');
-            const input = document.getElementById('login-username').value.trim().toLowerCase();
-            const pass = document.getElementById('login-password').value;
+    clearError('login-error');
+    const input = document.getElementById('login-username').value.trim();
+    const pass = document.getElementById('login-password').value;
 
-            if (!input || !pass) {
-                showError('login-error', '⚠️ Please enter both Username/Email and Password.');
-                return;
-            }
+    if (!input || !pass) {
+        showError('login-error', '⚠️ Please enter both Username/Email and Password.');
+        return;
+    }
 
-            if (input === "admin1" || input === "anas khan") {
-                if (pass !== "12345" && pass !== "anas") {
-                    showError('login-error', '❌ Invalid Password! Please enter correct password.');
-                    return;
-                }
-                currentUser = {
-                    fullName: "Anas Khan",
-                    balance: 55001.00,
-                    taskDone: false
-                };
-            } else {
-                const users = getAccounts();
-                const matchedUser = users[input];
-
-                if (!matchedUser) {
-                    showError('login-error', '❌ No account found! Please register first.');
-                    return;
-                }
-                if (matchedUser.password !== pass) {
-                    showError('login-error', '❌ Invalid Password! Password does not match.');
-                    return;
-                }
-                currentUser = matchedUser;
-            }
-
-            document.getElementById('view-login').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('menu-toggle-btn').classList.remove('hidden');
-
-            updateUI();
-            startSlideTimer();
-            fetchLatestAnnouncement();
-            showAnnouncement();
+    if (input.toLowerCase() === "admin1" || input.toLowerCase() === "anas khan") {
+        if ((input.toLowerCase() === "admin1" && pass !== "12345") || 
+            (input.toLowerCase() === "anas khan" && pass !== "anas")) {
+            showError('login-error', '❌ Invalid Password! Please enter correct credentials.');
+            return;
         }
+        currentUser = {
+            fullName: "Anas Khan",
+            balance: 55001.00,
+            taskDone: false
+        };
+    } else {
+        const users = getAccounts() || {};
+        
+        // Case-insensitive aur trim-safe user dhoondne ka tareeqa
+        const lowerInput = input.toLowerCase();
+        const matchedKey = Object.keys(users).find(k => k.trim().toLowerCase() === lowerInput);
+        const matchedUser = matchedKey ? users[matchedKey] : null;
+
+        if (!matchedUser) {
+            showError('login-error', '❌ No account found! Please register first.');
+            return;
+        }
+        if (matchedUser.password !== pass) {
+            showError('login-error', '❌ Incorrect password!');
+            return;
+        }
+        currentUser = matchedUser;
+    }
+
+    // Baaki dashboard open karne ka code...
+    document.getElementById('view-login').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.remove('hidden');
+    document.getElementById('menu-toggle-btn').classList.remove('hidden');
+    updateUI();
+}
 
         function handleLogout() {
             currentUser = null;
