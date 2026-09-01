@@ -840,8 +840,7 @@
             <div class="status-box" style="border-left-color: #1f6feb;" id="dynamic-announcement-container">
                 <h3 style="color: #ffffff; margin-bottom: 8px;">Welcome to DBL Portal!</h3>
                 <p style="color: #c9d1d9; font-size: 14px; line-height: 1.6;" id="announcement-text-content">
-                    Hi dear users! How are you all?<br><br>
-                    Welcome to <strong>DBL Portal (Dollar Burst Limited)</strong>. This is a 100% trusted and long-term investment platform. May Allah bless you all with great success, happiness, and continuous financial growth!
+                    Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!
                 </p>
             </div>
         </div>
@@ -868,8 +867,7 @@
         <div class="modal-card">
             <h2>📢 DBL Portal Official Announcement</h2>
             <p id="modal-announcement-text">
-                Hi dear users! How are you all?<br><br>
-                Welcome to <strong>Dollar Burst Limited (DBL)</strong>! This is a 100% trusted and long-term investment platform. May Allah bless you all with success, happiness, and continuous earnings!
+                Dear user, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!
             </p>
             <button class="btn-action" onclick="closeModal()">Continue to Dashboard</button>
         </div>
@@ -972,15 +970,27 @@
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
 
+            // Update Announcement dynamically with account name
+            updateDynamicAnnouncementText();
+
             loadUserTransactions();
         }
 
-        // NEW: Backend se user ki latest profile aur balance fetch karne ka function
+        function updateDynamicAnnouncementText() {
+            if (!currentUser) return;
+            const messageText = `Dear ${currentUser.fullName}, welcome to DBL! 100% safe and long-term income platform. Ap yaha acha munafa kama sakty hain aur long term ke liye shukriya!`;
+            
+            const textContainer = document.getElementById('announcement-text-content');
+            if (textContainer) textContainer.innerHTML = messageText;
+
+            const modalText = document.getElementById('modal-announcement-text');
+            if (modalText) modalText.innerHTML = messageText;
+        }
+
         async function fetchUserProfile() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
             if (!currentUsername) return;
 
-            // Agar admin account hai toh skip karein
             if (currentUsername === "anas_admin") return;
 
             try {
@@ -1000,12 +1010,10 @@
             }
         }
 
-        // Updated loadUserTransactions function jo Deposits aur Withdrawals dono ko fetch karega
         async function loadUserTransactions() {
             const currentUsername = currentUser ? currentUser.username : localStorage.getItem('username');
             if (!currentUsername) return;
             
-            // 1. Load Deposits
             try {
                 const res = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const data = await res.json();
@@ -1025,7 +1033,6 @@
                 console.warn("Failed to load deposit transactions", tabErr);
             }
 
-            // 2. Load Withdrawals
             try {
                 const resW = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const dataW = await resW.json();
@@ -1046,7 +1053,6 @@
             }
         }
 
-        /* Image Slideshow Logic Functions */
         function updateSlidePosition() {
             const wrapper = document.getElementById('slider-wrapper');
             if (!wrapper) return;
@@ -1178,7 +1184,6 @@
                 return;
             }
 
-            // Admin shortcut check
             if (input.toLowerCase() === "anas khan" || input.toLowerCase() === "admin" || input.toLowerCase() === "anas_admin") {
                 if (pass !== "admin123" && pass !== "123456" && pass !== "anas") {
                     showError('login-error', '❌ Invalid Password!');
@@ -1194,7 +1199,6 @@
                 return;
             }
 
-            // Backend API call for normal users across all devices/laptops
             try {
                 const response = await fetch('https://dbl-backend.vercel.app/api/login', {
                     method: 'POST',
@@ -1211,7 +1215,6 @@
                     showError('login-error', result.message || '❌ No account found or incorrect password!');
                 }
             } catch (err) {
-                // Fallback to local storage if backend is unreachable
                 const users = getAccounts();
                 const matchedUser = users[input.toLowerCase()] || Object.values(users).find(u => u.email === input);
 
@@ -1235,7 +1238,6 @@
             updateUI();
             fetchUserProfile();
             startSlideTimer();
-            fetchLatestAnnouncement();
             showAnnouncement();
         }
 
@@ -1259,9 +1261,8 @@
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('menu-toggle-btn').classList.remove('hidden');
                 updateUI();
-                fetchUserProfile(); // Fetch latest balance on page reload
+                fetchUserProfile();
                 startSlideTimer();
-                fetchLatestAnnouncement();
             }
         });
 
@@ -1325,7 +1326,6 @@
                     alert(result.message || "Failed to submit deposit.");
                 }
             } catch (err) {
-                console.warn("Backend error...", err);
                 showSuccess('deposit-success', `✔️ Deposit submitted!`);
                 document.getElementById('deposit-sender-info').value = '';
                 document.getElementById('deposit-amount-input').value = '';
@@ -1389,7 +1389,7 @@
                     showError('withdraw-error', result.message || "Failed to submit withdrawal to backend.");
                 }
             } catch (err) {
-                showError('withdraw-success', `✔️ Withdrawal submitted!`);
+                showSuccess('withdraw-success', `✔️ Withdrawal submitted!`);
                 document.getElementById('withdraw-account-number').value = '';
                 document.getElementById('withdraw-account-name').value = '';
                 document.getElementById('withdraw-amount-input').value = '';
@@ -1416,7 +1416,6 @@
             });
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
 
-            // Agar dashboard tab open ho toh latest balance dobara fetch karein
             if (tabName === 'dashboard') {
                 fetchUserProfile();
             }
@@ -1431,27 +1430,6 @@
 
         function closeModal() {
             document.getElementById('startup-modal').classList.add('hidden');
-        }
-
-        async function fetchLatestAnnouncement() {
-            try {
-                const response = await fetch('https://dbl-backend.vercel.app/api/announcements');
-                const data = await response.json();
-                
-                if (data) {
-                    let latestItem = Array.isArray(data) ? data[data.length - 1] : data;
-                    const rawText = latestItem.text || latestItem.message || latestItem.content || "No announcement text found.";
-                    const formattedText = rawText.replace(/\n/g, '<br>');
-                    
-                    const textContainer = document.getElementById('announcement-text-content');
-                    if (textContainer) textContainer.innerHTML = formattedText;
-
-                    const modalText = document.getElementById('modal-announcement-text');
-                    if (modalText) modalText.innerHTML = formattedText;
-                }
-            } catch (err) {
-                console.warn("Announcement fetch skipped.", err);
-            }
         }
     </script>
 </body>
