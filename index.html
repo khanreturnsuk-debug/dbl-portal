@@ -257,6 +257,28 @@
             font-weight: 600;
         }
 
+        /* History Table Styling */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid #30363d;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .history-table th {
+            background: #21262d;
+            color: #2ea043;
+        }
+
+        .status-pending { color: #d29922; font-weight: bold; }
+        .status-approved { color: #3fb950; font-weight: bold; }
+
         /* VIP Card Layouts */
         .vip-card-grid {
             display: flex;
@@ -734,7 +756,7 @@
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Deposit Funds</h2>
             <div class="status-box">
-                Send funds to our official EasyPaisa or JazzCash account below. Once paid, submit your details for verification.
+                Send funds to our official EasyPaisa or JazzCash account below. Once paid, submit your details. Balance will update only after backend/admin approval.
             </div>
             
             <div id="deposit-success" class="success-box hidden"></div>
@@ -758,18 +780,33 @@
             </div>
 
             <div class="form-group">
-                <label>Amount ($ or PKR)</label>
+                <label>Amount ($)</label>
                 <input type="number" id="deposit-amount-input" class="form-control" placeholder="Enter amount">
             </div>
 
             <button class="btn-action" onclick="submitDeposit()">Submit Deposit Request</button>
+
+            <!-- Deposit History -->
+            <h3 style="margin-top: 20px; font-size: 14px; color: #2ea043;">Deposit Requests History</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="deposit-history-list">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
         </div>
 
         <!-- Withdraw View (EasyPaisa & JazzCash) -->
         <div id="view-withdraw" class="view-content hidden">
             <h2 style="margin-bottom: 15px; color: #2ea043;">Withdraw Funds</h2>
             <div class="status-box">
-                Request your earnings withdrawal directly to your EasyPaisa or JazzCash account.
+                Request your earnings withdrawal. Balance will be deducted only after backend approval.
             </div>
 
             <div id="withdraw-success" class="success-box hidden"></div>
@@ -785,7 +822,7 @@
             
             <div class="form-group">
                 <label>Receiver Mobile Number</label>
-                <input type="text" id="withdraw-account-number" class="form-control" placeholder="Enter EasyPaisa / JazzCash Mobile Number">
+                <input type="text" id="withdraw-account-number" class="form-control" placeholder="Enter Mobile Number">
             </div>
             
             <div class="form-group">
@@ -798,6 +835,21 @@
                 <input type="number" id="withdraw-amount-input" class="form-control" placeholder="Enter Amount">
             </div>
             <button class="btn-action" onclick="submitWithdrawal()">Request Withdrawal</button>
+
+            <!-- Withdrawal History -->
+            <h3 style="margin-top: 20px; font-size: 14px; color: #2ea043;">Withdrawal Requests History</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="withdraw-history-list">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
         </div>
 
         <!-- Announcement View -->
@@ -860,6 +912,10 @@
             const users = getAccounts();
             users[username.toLowerCase()] = accountData;
             localStorage.setItem('dbl_users', JSON.stringify(users));
+            // Update current user state session storage persistence
+            if (currentUser && currentUser.username.toLowerCase() === username.toLowerCase()) {
+                sessionStorage.setItem('dbl_current_user', JSON.stringify(accountData));
+            }
         }
 
         function showError(elementId, msg) {
@@ -936,6 +992,43 @@
             document.getElementById('user-display-name').innerText = currentUser.fullName + ` (${vipInfo.level})`;
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
+
+            // Render deposit & withdrawal history tables
+            renderHistoryTables();
+        }
+
+        function renderHistoryTables() {
+            if (!currentUser) return;
+            
+            // Deposits history
+            const depList = document.getElementById('deposit-history-list');
+            depList.innerHTML = '';
+            if (currentUser.deposits && currentUser.deposits.length > 0) {
+                currentUser.deposits.forEach(item => {
+                    depList.innerHTML += `<tr>
+                        <td>${item.method}</td>
+                        <td>$${item.amount.toFixed(2)}</td>
+                        <td><span class="${item.status === 'Approved' ? 'status-approved' : 'status-pending'}">${item.status}</span></td>
+                    </tr>`;
+                });
+            } else {
+                depList.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #8b949e;">No deposit requests yet</td></tr>`;
+            }
+
+            // Withdrawals history
+            const witList = document.getElementById('withdraw-history-list');
+            witList.innerHTML = '';
+            if (currentUser.withdrawals && currentUser.withdrawals.length > 0) {
+                currentUser.withdrawals.forEach(item => {
+                    witList.innerHTML += `<tr>
+                        <td>${item.method}</td>
+                        <td>$${item.amount.toFixed(2)}</td>
+                        <td><span class="${item.status === 'Approved' ? 'status-approved' : 'status-pending'}">${item.status}</span></td>
+                    </tr>`;
+                });
+            } else {
+                witList.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #8b949e;">No withdrawal requests yet</td></tr>`;
+            }
         }
 
         /* Image Slideshow Logic Functions */
@@ -1032,7 +1125,9 @@
                 email: email,
                 password: password,
                 balance: 100.00,
-                taskDone: false
+                taskDone: false,
+                deposits: [],
+                withdrawals: []
             };
 
             try {
@@ -1053,7 +1148,6 @@
                     showError('reg-error', result.message || 'Registration failed');
                 }
             } catch (err) {
-                // Fallback to local storage if backend server is offline
                 saveAccount(username, userData);
                 saveAccount(email, userData);
                 alert(`Account registered locally & synced!\nYour Username is: ${username}`);
@@ -1078,8 +1172,11 @@
                 }
                 currentUser = {
                     fullName: "Anas Khan",
+                    username: "anas_admin",
                     balance: 55001.00,
-                    taskDone: false
+                    taskDone: false,
+                    deposits: [],
+                    withdrawals: []
                 };
             } else {
                 const users = getAccounts();
@@ -1094,7 +1191,12 @@
                     return;
                 }
                 currentUser = matchedUser;
+                // Ensure array fields exist
+                if (!currentUser.deposits) currentUser.deposits = [];
+                if (!currentUser.withdrawals) currentUser.withdrawals = [];
             }
+
+            sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
 
             document.getElementById('view-login').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
@@ -1108,6 +1210,7 @@
 
         function handleLogout() {
             currentUser = null;
+            sessionStorage.removeItem('dbl_current_user');
             clearInterval(slideInterval);
             slideInterval = null;
             toggleSidebar();
@@ -1116,11 +1219,27 @@
             document.getElementById('menu-toggle-btn').classList.add('hidden');
         }
 
+        // Auto-login check on page refresh
+        window.addEventListener('load', () => {
+            const savedSession = sessionStorage.getItem('dbl_current_user');
+            if (savedSession) {
+                currentUser = JSON.parse(savedSession);
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                document.getElementById('menu-toggle-btn').classList.remove('hidden');
+                updateUI();
+                startSlideTimer();
+                fetchLatestAnnouncement();
+            }
+        });
+
         function claimTaskReward() {
             if (!currentUser || currentUser.taskDone) return;
             const vipInfo = calculateVIP(currentUser.balance);
             currentUser.balance += vipInfo.reward;
             currentUser.taskDone = true;
+
+            saveAccount(currentUser.username, currentUser);
 
             const btn = document.getElementById('task-btn');
             btn.innerText = "Task Completed Today";
@@ -1131,7 +1250,6 @@
         }
 
         function updateDepositNumber() {
-            // Both EasyPaisa and JazzCash use 03135506323 as specified
             document.getElementById('deposit-target-number').value = "03135506323";
         }
 
@@ -1145,12 +1263,24 @@
                 return;
             }
 
-            currentUser.balance += amount;
-            updateUI();
+            // Create deposit entry with "Pending" status (Balance won't increase until backend/admin approval)
+            const depositRequest = {
+                method: method,
+                sender: senderInfo,
+                amount: amount,
+                status: "Pending",
+                date: new Date().toISOString()
+            };
 
-            showSuccess('deposit-success', `✔️ Deposit request of ${amount} via ${method} submitted successfully! Balance updated.`);
+            currentUser.deposits.push(depositRequest);
+            saveAccount(currentUser.username, currentUser);
+            saveAccount(currentUser.email, currentUser);
+
+            showSuccess('deposit-success', `✔️ Deposit request submitted successfully! Status: Pending (Waiting for admin approval).`);
             document.getElementById('deposit-sender-info').value = '';
             document.getElementById('deposit-amount-input').value = '';
+            
+            updateUI();
         }
 
         async function submitWithdrawal() {
@@ -1172,13 +1302,26 @@
                 return;
             }
 
-            currentUser.balance -= amount;
-            updateUI();
+            // Create withdrawal entry with "Pending" status (Balance won't deduct until backend/admin approval)
+            const withdrawRequest = {
+                method: method,
+                accountNumber: accountNumber,
+                accountName: accountName,
+                amount: amount,
+                status: "Pending",
+                date: new Date().toISOString()
+            };
 
-            showSuccess('withdraw-success', `✔️ Withdrawal request of $${amount.toFixed(2)} via ${method} (${accountNumber}) submitted successfully!`);
+            currentUser.withdrawals.push(withdrawRequest);
+            saveAccount(currentUser.username, currentUser);
+            saveAccount(currentUser.email, currentUser);
+
+            showSuccess('withdraw-success', `✔️ Withdrawal request submitted successfully! Status: Pending (Waiting for admin approval).`);
             document.getElementById('withdraw-account-number').value = '';
             document.getElementById('withdraw-account-name').value = '';
             document.getElementById('withdraw-amount-input').value = '';
+
+            updateUI();
         }
 
         function toggleSidebar() {
