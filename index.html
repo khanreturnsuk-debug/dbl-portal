@@ -987,7 +987,9 @@
                 
                 const tbody = document.getElementById('user-transactions-table');
                 if (tbody && Array.isArray(data)) {
-                    tbody.innerHTML = data.map(item => `
+                    // Filter ya map kar ke sirf deposits dikhane ke liye ya general transactions ke liye
+                    const deposits = data.filter(item => item.type === 'deposit' || !item.type);
+                    tbody.innerHTML = deposits.map(item => `
                         <tr>
                             <td>${item.method}</td>
                             <td>$${item.amount}</td>
@@ -999,14 +1001,15 @@
                 console.warn("Failed to load deposit transactions", tabErr);
             }
 
-            // 2. Load Withdrawals (Naya addition)
+            // 2. Load Withdrawals (Updated to use /api/transactions/:username which holds both types)
             try {
-                const resW = await fetch(`https://dbl-backend.vercel.app/api/withdrawals/${currentUsername}`);
+                const resW = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
                 const dataW = await resW.json();
                 
                 const tbodyW = document.getElementById('withdraw-history-list');
                 if (tbodyW && Array.isArray(dataW)) {
-                    tbodyW.innerHTML = dataW.map(item => `
+                    const withdrawals = dataW.filter(item => item.type === 'withdrawal');
+                    tbodyW.innerHTML = withdrawals.map(item => `
                         <tr>
                             <td>${item.method}</td>
                             <td>$${item.amount}</td>
@@ -1334,7 +1337,6 @@
                     document.getElementById('withdraw-account-name').value = '';
                     document.getElementById('withdraw-amount-input').value = '';
                     
-                    // Yahan yeh function add kar diya gaya hai
                     loadUserTransactions();
                 } else {
                     showError('withdraw-error', result.message || "Failed to submit withdrawal to backend.");
@@ -1345,7 +1347,6 @@
                 document.getElementById('withdraw-account-name').value = '';
                 document.getElementById('withdraw-amount-input').value = '';
                 
-                // Offline/Catch block ke andar bhi update ke liye
                 loadUserTransactions();
             }
         }
