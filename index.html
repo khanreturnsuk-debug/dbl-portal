@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Portal - Sidebar Menu & VIP</title>
+    <title>Secure Portal - Deposit, Withdrawal & VIP</title>
     <style>
         * {
             box-sizing: border-box;
@@ -42,7 +42,7 @@
             font-size: 13px;
             color: #94a3b8;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 9px 12px;
             background: #0f172a;
@@ -51,7 +51,7 @@
             color: #fff;
             font-size: 15px;
         }
-        input:focus {
+        input:focus, select:focus {
             border-color: #38bdf8;
             outline: none;
         }
@@ -191,7 +191,7 @@
             display: block;
         }
 
-        /* Tab Content & Picture Banners */
+        /* Tab Content & Banners */
         .tab-content {
             background: #1e293b;
             padding: 25px;
@@ -205,8 +205,6 @@
             padding: 25px;
             text-align: center;
             margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
         }
         .banner-icon {
             font-size: 40px;
@@ -228,6 +226,13 @@
         .vip-card h4 {
             color: #38bdf8;
             margin-bottom: 8px;
+        }
+        .wallet-card {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin-bottom: 15px;
         }
 
         /* Welcome Popup Modal */
@@ -311,7 +316,7 @@
         </div>
     </div>
 
-    <!-- WELCOME POPUP MODAL -->
+    <!-- WELCOME MODAL -->
     <div id="welcome-modal" class="modal-overlay hidden">
         <div class="modal-box">
             <div style="font-size: 45px; margin-bottom: 10px;">🎉</div>
@@ -324,14 +329,14 @@
     <!-- DASHBOARD VIEW -->
     <div id="view-dashboard" class="dashboard-container hidden">
         
-        <!-- Header Bar with Three-Line Hamburger Button -->
+        <!-- Header Bar -->
         <div class="header-bar">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <h2 style="margin: 0; color: #38bdf8; font-size: 20px;">Dashboard Portal</h2>
             <div style="width: 35px;"></div>
         </div>
 
-        <!-- Sidebar Navigation Drawer -->
+        <!-- Sidebar Navigation -->
         <div class="overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="app-sidebar">
             <h3>Portal Menu</h3>
@@ -339,17 +344,17 @@
             <button id="tab-btn-profile" onclick="switchTab('profile')">👤 Profile</button>
             <button id="tab-btn-vip" onclick="switchTab('vip')">⭐ VIP Levels</button>
             <button id="tab-btn-tasks" onclick="switchTab('tasks')">📋 Tasks</button>
-            <button id="tab-btn-wallet" onclick="switchTab('wallet')">💰 Wallet</button>
+            <button id="tab-btn-wallet" onclick="switchTab('wallet')">💰 Wallet & Deposit</button>
             <button id="tab-btn-settings" onclick="switchTab('settings')">⚙️ Settings</button>
             <button style="background: #ef4444; color: #fff; margin-top: 20px;" onclick="handleLogout()">🚪 Logout</button>
         </div>
 
-        <!-- Home Tab with Picture / Graphic Banner -->
+        <!-- Home Tab -->
         <div id="tab-home" class="tab-content">
             <div class="banner-card">
                 <div class="banner-icon">🚀</div>
                 <h3 style="color: #38bdf8; margin-bottom: 5px;">Welcome, <span id="dash-name">User</span>!</h3>
-                <p style="color: #94a3b8; font-size: 14px;">Your portal is active and running smoothly.</p>
+                <p style="color: #94a3b8; font-size: 14px;">Your portal is active and secure.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div style="background: #0f172a; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #334155;">
@@ -375,7 +380,7 @@
             <p style="margin-top: 8px;"><strong>Username:</strong> <span id="profile-username">-</span></p>
         </div>
 
-        <!-- VIP Levels Tab (VIP 1 to VIP 10) -->
+        <!-- VIP Levels Tab -->
         <div id="tab-vip" class="tab-content hidden">
             <div class="banner-card">
                 <div class="banner-icon">👑</div>
@@ -385,7 +390,7 @@
             <div class="vip-grid" id="vip-levels-container"></div>
         </div>
 
-        <!-- Tasks Tab (1% reward) -->
+        <!-- Tasks Tab -->
         <div id="tab-tasks" class="tab-content hidden">
             <div class="banner-card">
                 <div class="banner-icon">🎯</div>
@@ -398,13 +403,53 @@
             </div>
         </div>
 
-        <!-- Wallet Tab -->
+        <!-- Wallet, Deposit & Withdrawal Tab -->
         <div id="tab-wallet" class="tab-content hidden">
             <div class="banner-card">
                 <div class="banner-icon">💳</div>
-                <h3>Wallet & Funds</h3>
+                <h3>Wallet & Transactions</h3>
+                <p style="color: #94a3b8; font-size: 13px;">Total Balance: $<span id="wallet-balance">0.00</span></p>
             </div>
-            <p style="text-align: center; color: #94a3b8;">Total Available Balance: <strong style="color: #38bdf8;">$<span id="wallet-balance">0.00</span></strong></p>
+
+            <div id="wallet-alert" class="hidden"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- Deposit Box -->
+                <div class="wallet-card">
+                    <h4 style="color: #38bdf8; margin-bottom: 12px;">Deposit Funds</h4>
+                    <div class="form-group">
+                        <label>Select Network / Method</label>
+                        <select id="deposit-method">
+                            <option value="USDT (TRC20)">USDT (TRC20)</option>
+                            <option value="Bitcoin">Bitcoin (BTC)</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Deposit Amount ($)</label>
+                        <input type="number" id="deposit-amount" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Deposit Address / Account</label>
+                        <input type="text" readonly value="TRC20: TXYZ918237aksjdh918237" style="color: #38bdf8; background: #070b14; font-size: 12px;">
+                    </div>
+                    <button onclick="handleDeposit()">Confirm Deposit</button>
+                </div>
+
+                <!-- Withdrawal Box -->
+                <div class="wallet-card">
+                    <h4 style="color: #38bdf8; margin-bottom: 12px;">Withdraw Funds</h4>
+                    <div class="form-group">
+                        <label>Withdrawal Amount ($)</label>
+                        <input type="number" id="withdraw-amount" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Receiving Address / Account</label>
+                        <input type="text" id="withdraw-address" placeholder="Enter wallet address or IBAN">
+                    </div>
+                    <button onclick="handleWithdraw()" style="background: #10b981; color: #fff;">Request Withdrawal</button>
+                </div>
+            </div>
         </div>
 
         <!-- Settings Tab -->
@@ -413,7 +458,7 @@
                 <div class="banner-icon">⚙️</div>
                 <h3>Account Settings</h3>
             </div>
-            <p style="text-align: center; color: #94a3b8;">Security and preference controls.</p>
+            <p style="text-align: center; color: #94a3b8;">Security configurations and preferences.</p>
         </div>
     </div>
 
@@ -470,7 +515,7 @@
             });
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-btn-${tabName}`).classList.add('active');
-            toggleSidebar(); // Close sidebar on selection
+            toggleSidebar();
             if (tabName === 'vip') renderVipCards();
         }
 
@@ -618,7 +663,6 @@
             document.getElementById('view-dashboard').classList.remove('hidden');
             updateUI();
             
-            // Show Login Welcome Modal popup
             document.getElementById('welcome-modal-text').innerText = `Welcome back, ${currentUser.fullName || currentUser.username}!`;
             document.getElementById('welcome-modal').classList.remove('hidden');
         }
@@ -685,6 +729,38 @@
             setTimeout(() => {
                 alertBox.classList.add('hidden');
             }, 4000);
+        }
+
+        function handleDeposit() {
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            if (!amount || amount <= 0) {
+                alert("⚠️ Please enter a valid deposit amount.");
+                return;
+            }
+            currentUser.balance += amount;
+            saveUserData();
+            updateUI();
+            alert(`✅ Successfully deposited $${amount.toFixed(2)}!`);
+            document.getElementById('deposit-amount').value = '';
+        }
+
+        function handleWithdraw() {
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const address = document.getElementById('withdraw-address').value.trim();
+            if (!amount || amount <= 0 || !address) {
+                alert("⚠️ Please enter a valid amount and receiving address.");
+                return;
+            }
+            if (currentUser.balance < amount) {
+                alert("❌ Insufficient balance for withdrawal!");
+                return;
+            }
+            currentUser.balance -= amount;
+            saveUserData();
+            updateUI();
+            alert(`✅ Withdrawal request of $${amount.toFixed(2)} submitted successfully to ${address}!`);
+            document.getElementById('withdraw-amount').value = '';
+            document.getElementById('withdraw-address').value = '';
         }
 
         function saveUserData() {
