@@ -933,19 +933,33 @@
         <!-- Deposit View -->
         <div id="view-deposit" class="view-content hidden">
             <h2 style="margin-bottom: 12px; color: #2ea043;">Deposit Funds</h2>
-            <div class="status-box">Minimum Deposit is $100. Send funds to official EasyPaisa or JazzCash account. Balance updates after approval.</div>
+            <div class="status-box">Minimum Deposit is $100. Send funds to the official cryptocurrency address below. Balance updates after blockchain confirmation.</div>
             <div id="deposit-success" class="success-box hidden"></div>
+            
             <div class="form-group">
-                <label>Deposit Method</label>
-                <select id="deposit-method" class="form-control"><option value="EasyPaisa">EasyPaisa</option><option value="JazzCash">JazzCash</option></select>
+                <label>Deposit Network / Method</label>
+                <select id="deposit-method" class="form-control" onchange="updateDepositDetails()">
+                    <option value="USDT-TRC20">USDT (TRC20)</option>
+                    <option value="USDT-BEP20">USDT (BEP20)</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label>Official Number</label>
-                <input type="text" class="form-control" value="03135506323" readonly style="color: #2ea043; font-weight: bold;">
+
+            <!-- Crypto QR Code & Address Box -->
+            <div class="form-group" style="text-align: center; background: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 10px;">
+                <label style="margin-bottom: 8px;">Scan QR Code to Pay</label>
+                <div id="qr-code-container" style="margin-bottom: 10px;">
+                    <img id="crypto-qr-img" src="" alt="Deposit QR Code" style="width: 140px; height: 140px; border-radius: 8px; background: #fff; padding: 5px;">
+                </div>
+                <label>Official Wallet Address</label>
+                <div style="display: flex; gap: 6px; margin-top: 5px;">
+                    <input type="text" id="official-crypto-address" class="form-control" readonly style="color: #2ea043; font-weight: bold; font-size: 11px; text-align: center;" value="">
+                    <button type="button" class="copy-btn" onclick="copyCryptoAddress()">Copy</button>
+                </div>
             </div>
+
             <div class="form-group">
-                <label>Sender Phone / Account Title</label>
-                <input type="text" id="deposit-sender-info" class="form-control" placeholder="Enter mobile number or name">
+                <label>Transaction Hash / Sender ID</label>
+                <input type="text" id="deposit-sender-info" class="form-control" placeholder="Enter TxID or Wallet Reference">
             </div>
             <div class="form-group">
                 <label>Amount ($) [Min: $100]</label>
@@ -1085,6 +1099,28 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+
+        const cryptoWallets = {
+            "USDT-TRC20": "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",
+            "USDT-BEP20": "0x71C...B289e4F123a491bC98721"
+        };
+
+        function updateDepositDetails() {
+            const method = document.getElementById('deposit-method').value;
+            const address = cryptoWallets[method] || cryptoWallets["USDT-TRC20"];
+            document.getElementById('official-crypto-address').value = address;
+            
+            const qrImg = document.getElementById('crypto-qr-img');
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(address)}`;
+            qrImg.src = qrApiUrl;
+        }
+
+        function copyCryptoAddress() {
+            const addrInput = document.getElementById('official-crypto-address');
+            navigator.clipboard.writeText(addrInput.value).then(() => {
+                showCustomAlert("Wallet address copied to clipboard!");
+            });
         }
 
         let generatedOTP = null;
@@ -1327,6 +1363,7 @@
             fetchUserProfile();
             startSlideTimer();
             showAnnouncement();
+            updateDepositDetails();
         }
 
         function handleLogout() {
@@ -1343,6 +1380,7 @@
         }
 
         window.addEventListener('load', () => {
+            updateDepositDetails();
             const savedSession = sessionStorage.getItem('dbl_current_user');
             if (savedSession) {
                 currentUser = JSON.parse(savedSession);
@@ -1484,6 +1522,7 @@
                 document.getElementById('nav-vips').classList.add('active');
             } else if (tabName === 'deposit') {
                 document.getElementById('nav-wallet').classList.add('active');
+                updateDepositDetails();
             } else if (tabName === 'profile') {
                 document.getElementById('nav-profile').classList.add('active');
             }
