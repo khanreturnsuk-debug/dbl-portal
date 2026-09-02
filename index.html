@@ -1079,7 +1079,7 @@
     </div>
 
     <script>
-        function showCustomAlert(message) {
+        function showCustomAlert(message, isSuccess = false) {
             const existingModal = document.getElementById('custom-alert-modal');
             if (existingModal) existingModal.remove();
 
@@ -1090,9 +1090,13 @@
                 background: rgba(0,0,0,0.7); display: flex; justify-content: center;
                 align-items: center; z-index: 9999; font-family: sans-serif;
             `;
+            
+            const titleColor = isSuccess ? '#2ea043' : '#f85149';
+            const titleText = isSuccess ? '✅ Successful' : '⚠️ Warning / Requirement';
+
             modal.innerHTML = `
                 <div style="background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 12px; width: 320px; text-align: center; color: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-                    <h3 style="color: #f85149; margin-bottom: 10px; font-size: 16px;">⚠️ Warning / Requirement</h3>
+                    <h3 style="color: ${titleColor}; margin-bottom: 10px; font-size: 16px;">${titleText}</h3>
                     <p style="font-size: 14px; color: #c9d1d9; margin-bottom: 20px; line-height: 1.4;">${message}</p>
                     <button onclick="document.getElementById('custom-alert-modal').remove()" style="background: #2ea043; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">OK</button>
                 </div>
@@ -1117,7 +1121,7 @@
         function copyCryptoAddress() {
             const addrInput = document.getElementById('official-crypto-address');
             navigator.clipboard.writeText(addrInput.value).then(() => {
-                showCustomAlert("Wallet address copied to clipboard!");
+                showCustomAlert("Wallet address copied to clipboard!", true);
             });
         }
 
@@ -1154,7 +1158,7 @@
         function sendOTP() {
             const email = document.getElementById('reg-email').value.trim();
             if (!email || !email.includes('@')) {
-                showCustomAlert('Please enter a valid email address first!');
+                showCustomAlert('Please enter a valid email address first!', false);
                 return;
             }
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
@@ -1275,15 +1279,15 @@
             const cpassword = document.getElementById('reg-cpassword').value;
 
             if (!fname || !lname || !email) {
-                showCustomAlert('Please fill out all required fields.');
+                showCustomAlert('Please fill out all required fields.', false);
                 return;
             }
             if (!generatedOTP || otp !== generatedOTP) {
-                showCustomAlert('Invalid or unverified OTP code!');
+                showCustomAlert('Invalid or unverified OTP code!', false);
                 return;
             }
             if (password !== cpassword) {
-                showCustomAlert('Passwords do not match!');
+                showCustomAlert('Passwords do not match!', false);
                 return;
             }
 
@@ -1296,12 +1300,12 @@
                 });
                 if (response.ok) {
                     saveAccount(username, userData);
-                    showCustomAlert(`Account registered successfully!\nUsername: ${username}`);
+                    showCustomAlert(`Account registered successfully!\nUsername: ${username}`, true);
                     switchAuthView('login');
                 }
             } catch (err) {
                 saveAccount(username, userData);
-                showCustomAlert(`Account registered locally!\nUsername: ${username}`);
+                showCustomAlert(`Account registered locally!\nUsername: ${username}`, true);
                 switchAuthView('login');
             }
         }
@@ -1310,7 +1314,7 @@
             const input = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value;
             if (!input || !pass) {
-                showCustomAlert('Please enter login details.');
+                showCustomAlert('Please enter login details.', false);
                 return;
             }
             if (input.toLowerCase() === "anas khan" || input.toLowerCase() === "admin" || input.toLowerCase() === "anas_admin") {
@@ -1331,13 +1335,13 @@
                     if (currentUser.investedAmount === undefined) currentUser.investedAmount = 0;
                     proceedLoginSuccess(currentUser);
                 } else {
-                    showCustomAlert('Invalid username or password!');
+                    showCustomAlert('Invalid username or password!', false);
                 }
             } catch (err) {
                 const users = getAccounts();
                 const matchedUser = users[input.toLowerCase()] || Object.values(users).find(u => u.email === input);
                 if (!matchedUser || matchedUser.password !== pass) {
-                    showCustomAlert('Account not found!');
+                    showCustomAlert('Account not found!', false);
                     return;
                 }
                 currentUser = matchedUser;
@@ -1423,7 +1427,7 @@
             btn.innerText = "Task Completed Today";
             btn.disabled = true;
             updateUI();
-            showCustomAlert(`Success! $${vipInfo.reward.toFixed(2)} added to available balance.`);
+            showCustomAlert(`Success! $${vipInfo.reward.toFixed(2)} added to available balance.`, true);
         }
 
         async function submitDeposit() {
@@ -1432,11 +1436,11 @@
             const amount = parseFloat(document.getElementById('deposit-amount-input').value);
             
             if (!senderInfo || !amount) {
-                showCustomAlert("Please enter valid deposit details.");
+                showCustomAlert("Please enter valid deposit details.", false);
                 return;
             }
             if (amount < 100) {
-                showCustomAlert("Minimum deposit amount is $100!");
+                showCustomAlert("Minimum deposit amount is $100!", false);
                 return;
             }
 
@@ -1446,12 +1450,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: currentUser.username, method, sender: senderInfo, amount, status: 'Pending' })
                 });
-                showCustomAlert("✔️ Deposit request submitted successfully!");
+                showCustomAlert("✔️ Deposit request submitted successfully!", true);
                 document.getElementById('deposit-sender-info').value = '';
                 document.getElementById('deposit-amount-input').value = '';
                 loadUserTransactions();
             } catch (err) {
-                showCustomAlert("✔️ Deposit submitted!");
+                showCustomAlert("✔️ Deposit submitted successfully!", true);
                 loadUserTransactions();
             }
         }
@@ -1463,15 +1467,15 @@
             const amount = parseFloat(document.getElementById('withdraw-amount-input').value);
 
             if (!accountNumber || !accountName || !amount) {
-                showCustomAlert('Please fill out withdrawal details.');
+                showCustomAlert('Please fill out withdrawal details.', false);
                 return;
             }
             if (amount < 90) {
-                showCustomAlert('Minimum withdrawal amount is $90!');
+                showCustomAlert('Minimum withdrawal amount is $90!', false);
                 return;
             }
             if ((currentUser.balance || 0) < amount) {
-                showCustomAlert('Insufficient earnings balance for withdrawal! (Deposited principal cannot be withdrawn)');
+                showCustomAlert('Insufficient earnings balance for withdrawal! (Deposited principal cannot be withdrawn)', false);
                 return;
             }
 
@@ -1489,16 +1493,16 @@
                     currentUser.balance -= amount;
                     saveAccount(currentUser.username, currentUser);
                     updateUI();
-                    showCustomAlert(`✔️ Withdrawal request submitted!\nAmount: $${amount}\n17% Admin Charges Deducted: $${taxCharges.toFixed(2)}`);
+                    showCustomAlert(`✔️ Withdrawal request submitted successfully!\nAmount: $${amount}\n17% Admin Charges Deducted: $${taxCharges.toFixed(2)}`, true);
                     loadUserTransactions();
                 } else {
-                    showCustomAlert(result.message || 'Withdrawal failed');
+                    showCustomAlert(result.message || 'Withdrawal failed', false);
                 }
             } catch (err) {
                 currentUser.balance -= amount;
                 saveAccount(currentUser.username, currentUser);
                 updateUI();
-                showCustomAlert(`✔️ Withdrawal submitted!\n17% Tax/Charges applied: $${taxCharges.toFixed(2)}`);
+                showCustomAlert(`✔️ Withdrawal request submitted successfully!\n17% Tax/Charges applied: $${taxCharges.toFixed(2)}`, true);
                 loadUserTransactions();
             }
         }
@@ -1546,7 +1550,7 @@
         function copyReferralLink() {
             const linkText = document.getElementById('refLink').innerText;
             navigator.clipboard.writeText(linkText).then(() => {
-                showCustomAlert("Referral link copied successfully!");
+                showCustomAlert("Referral link copied successfully!", true);
             });
         }
     </script>
