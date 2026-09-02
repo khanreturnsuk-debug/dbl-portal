@@ -1038,7 +1038,7 @@
             <div class="referral-box">
                 <h3>Invite Friends & Earn</h3>
                 <div class="referral-row">
-                    <div class="referral-input" id="refLink">https://dblportal.com/ref?user=anas_admin</div>
+                    <div class="referral-input" id="refLink">https://dbl-portal-two.vercel.app/?ref=anas_admin</div>
                     <button class="copy-btn" onclick="copyReferralLink()">Copy</button>
                 </div>
             </div>
@@ -1198,7 +1198,7 @@
             document.getElementById('profile-vip').innerText = vipInfo.level;
             document.getElementById('sidebar-uname-display').innerText = currentUser.username;
 
-            const refUrl = `https://dblportal.com/ref?user=${currentUser.username}`;
+            const refUrl = `https://dbl-portal-two.vercel.app/?ref=${currentUser.username}`;
             const refElement = document.getElementById('refLink');
             if(refElement) refElement.innerText = refUrl;
 
