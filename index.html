@@ -991,10 +991,10 @@
                 <input type="text" id="withdraw-account-name" class="form-control" placeholder="Enter Account Title">
             </div>
             <div class="form-group">
-                <label>Amount ($) [Min: $90, 17% Tax]</label>
+                <label>Amount ($) [Min: $90, 17% Platform Fee]</label>
                 <input type="number" id="withdraw-amount-input" class="form-control" placeholder="Enter Amount">
                 <div id="tax-calculation-box" style="margin-top: 8px; font-size: 13px; color: #8b949e; display: none;">
-                    Fee/Tax (17%): <span id="calc-tax" style="color: #f85149;">$0.00</span> | Net Payout: <span id="calc-net" style="color: #2ea043; font-weight: bold;">$0.00</span>
+                    Platform Fee (17%): <span id="calc-tax" style="color: #f85149;">$0.00</span> | Net Payout: <span id="calc-net" style="color: #2ea043; font-weight: bold;">$0.00</span>
                 </div>
             </div>
             <button class="btn-full-action" onclick="submitWithdrawal()">Request Withdrawal</button>
@@ -1445,7 +1445,6 @@
                     showCustomAlert(result.message || 'Task completion failed', false);
                 }
             } catch (err) {
-                // Fallback: Agar backend abhi offline ho to local storage par task complete ho jaye ga
                 const totalBal = (currentUser.balance || 0) + (currentUser.investedAmount || 0);
                 const vipInfo = calculateVIP(totalBal);
                 currentUser.balance = (currentUser.balance || 0) + vipInfo.reward;
@@ -1491,7 +1490,6 @@
                     loadUserTransactions();
                     fetchUserProfile();
                 } else {
-                    // Yahan galat ya fake TxID hone par backend ka error message popup alert mein show hoga
                     showCustomAlert(result.message || "Auto-verification failed! Invalid TxID.", false);
                 }
             } catch (err) {
@@ -1532,7 +1530,7 @@
                     currentUser.balance -= amount;
                     saveAccount(currentUser.username, currentUser);
                     updateUI();
-                    showCustomAlert(`✔️ Withdrawal request submitted successfully!\nAmount: $${amount}\n17% Admin Charges Deducted: $${taxCharges.toFixed(2)}`, true);
+                    showCustomAlert(`✔️ Withdrawal request submitted successfully!\nAmount: $${amount}\n17% Platform Fee Deducted: $${taxCharges.toFixed(2)}`, true);
                     loadUserTransactions();
                 } else {
                     showCustomAlert(result.message || 'Withdrawal failed', false);
@@ -1541,7 +1539,7 @@
                 currentUser.balance -= amount;
                 saveAccount(currentUser.username, currentUser);
                 updateUI();
-                showCustomAlert(`✔️ Withdrawal request submitted successfully!\n17% Tax/Charges applied: $${taxCharges.toFixed(2)}`, true);
+                showCustomAlert(`✔️ Withdrawal request submitted successfully!\n17% Platform Fee applied: $${taxCharges.toFixed(2)}`, true);
                 loadUserTransactions();
             }
         }
