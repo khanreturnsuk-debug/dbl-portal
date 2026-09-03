@@ -1218,14 +1218,34 @@
                     if (latestUserData) {
                         currentUser.balance = Number(latestUserData.balance || latestUserData.availableBalance || 0);
                         currentUser.investedAmount = Number(latestUserData.investedAmount || 0);
-                        sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
-                        updateUI();
                     }
                 }
             } catch (err) {
-                // Fallback for local/admin accounts if backend is unreachable
                 console.warn("Backend sync warning", err);
             }
+
+            // Fetch transactions to calculate total approved deposits and add to balance
+            try {
+                const txRes = await fetch(`https://dbl-backend.vercel.app/api/transactions/${currentUsername}`);
+                const txData = await txRes.json();
+                if (Array.isArray(txData)) {
+                    let approvedDepositTotal = 0;
+                    txData.forEach(item => {
+                        if ((item.type === 'deposit' || !item.type) && item.status === 'Approved') {
+                            approvedDepositTotal += Number(item.amount || 0);
+                        }
+                    });
+                    // Reflect approved deposits into invested amount or available balance
+                    if (approvedDepositTotal > 0) {
+                        currentUser.investedAmount = approvedDepositTotal;
+                    }
+                }
+            } catch (e) {
+                console.warn("Tx balance sync warning", e);
+            }
+
+            sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
+            updateUI();
         }
 
         async function loadUserTransactions() {
@@ -1246,6 +1266,19 @@
                     if (tbodyW) {
                         const withdrawals = data.filter(item => item.type === 'withdrawal');
                         tbodyW.innerHTML = withdrawals.map(item => `<tr><td>${item.method}</td><td>$${item.amount}</td><td style="color:${item.status==='Approved'?'green':item.status==='Rejected'?'red':'orange'}">${item.status}</td></tr>`).join('');
+                    }
+                    
+                    // Calculate approved deposits and update balance instantly
+                    let approvedSum = 0;
+                    data.forEach(item => {
+                        if ((item.type === 'deposit' || !item.type) && item.status === 'Approved') {
+                            approvedSum += Number(item.amount || 0);
+                        }
+                    });
+                    if (approvedSum > 0 && currentUser) {
+                        currentUser.investedAmount = approvedSum;
+                        sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
+                        updateUI();
                     }
                     return;
                 }
@@ -1517,7 +1550,6 @@
                 if (response.ok && result.success) {
                     showCustomAlert("✔️ " + result.message, true);
                 } else {
-                    // Save locally if backend auto-verify fails for test/admin accounts
                     const localTxKey = `dbl_transactions_${currentUser.username.toLowerCase()}`;
                     const localTxs = JSON.parse(localStorage.getItem(localTxKey) || '[]');
                     localTxs.unshift(newTx);
