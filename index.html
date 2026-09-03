@@ -1183,22 +1183,22 @@
         function updateUI() {
             if (!currentUser) return;
             
-            const investedAmt = currentUser.investedAmount || 0;
-            const availableBal = currentUser.balance !== undefined ? currentUser.balance : (currentUser.availableBalance || 0); 
+            const investedAmt = Number(currentUser.investedAmount || 0);
+            const availableBal = Number(currentUser.balance !== undefined ? currentUser.balance : (currentUser.availableBalance || 0)); 
             const totalBalance = availableBal + investedAmt;
             const vipInfo = calculateVIP(totalBalance);
 
             document.getElementById('balance').innerText = totalBalance.toFixed(2);
             document.getElementById('avail-balance').innerText = availableBal.toFixed(2);
             document.getElementById('earn-profit').innerText = investedAmt.toFixed(2);
-            document.getElementById('user-display-name').innerText = currentUser.fullName;
+            document.getElementById('user-display-name').innerText = currentUser.fullName || "Anas Khan";
             document.getElementById('vip-level-badge').innerText = `${vipInfo.level} Tier`;
             document.getElementById('daily-reward-rate').innerText = vipInfo.reward.toFixed(2);
 
-            document.getElementById('profile-name').innerText = currentUser.fullName;
-            document.getElementById('profile-uname').innerText = currentUser.username;
+            document.getElementById('profile-name').innerText = currentUser.fullName || "Anas Khan";
+            document.getElementById('profile-uname').innerText = currentUser.username || "";
             document.getElementById('profile-vip').innerText = vipInfo.level;
-            document.getElementById('sidebar-uname-display').innerText = currentUser.username;
+            document.getElementById('sidebar-uname-display').innerText = currentUser.username || "";
 
             const refUrl = `https://dbl-portal-two.vercel.app/?ref=${currentUser.username}`;
             const refElement = document.getElementById('refLink');
@@ -1216,8 +1216,8 @@
                 if (Array.isArray(users)) {
                     const latestUserData = users.find(u => u.username.toLowerCase() === currentUsername.toLowerCase());
                     if (latestUserData) {
-                        currentUser.balance = latestUserData.balance || 0;
-                        currentUser.investedAmount = latestUserData.investedAmount || 0;
+                        currentUser.balance = Number(latestUserData.balance || latestUserData.availableBalance || 0);
+                        currentUser.investedAmount = Number(latestUserData.investedAmount || 0);
                         sessionStorage.setItem('dbl_current_user', JSON.stringify(currentUser));
                         updateUI();
                     }
@@ -1362,8 +1362,8 @@
                 if (Array.isArray(users)) {
                     const latestUserData = users.find(u => u.username.toLowerCase() === userObj.username.toLowerCase());
                     if (latestUserData) {
-                        currentUser.balance = latestUserData.balance || 0;
-                        currentUser.investedAmount = latestUserData.investedAmount || 0;
+                        currentUser.balance = Number(latestUserData.balance || latestUserData.availableBalance || 0);
+                        currentUser.investedAmount = Number(latestUserData.investedAmount || 0);
                     }
                 }
             } catch (err) {
