@@ -957,7 +957,7 @@
             </div>
 
             <div class="form-group">
-                <label>Transaction Hash / Sender ID</label>
+                <label>Transaction Hash / Sender ID (TxID)</label>
                 <input type="text" id="deposit-sender-info" class="form-control" placeholder="Enter TxID or Wallet Reference">
             </div>
             <div class="form-group">
@@ -1477,18 +1477,25 @@
             }
 
             try {
-                await fetch('https://dbl-backend.vercel.app/api/deposit', {
+                const response = await fetch('https://dbl-backend.vercel.app/api/deposit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: currentUser.username, method, sender: senderInfo, amount, status: 'Pending' })
+                    body: JSON.stringify({ username: currentUser.username, method, sender: senderInfo, amount, txid: senderInfo })
                 });
-                showCustomAlert("✔️ Deposit request submitted successfully!", true);
-                document.getElementById('deposit-sender-info').value = '';
-                document.getElementById('deposit-amount-input').value = '';
-                loadUserTransactions();
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showCustomAlert("✔️ " + result.message, true);
+                    document.getElementById('deposit-sender-info').value = '';
+                    document.getElementById('deposit-amount-input').value = '';
+                    loadUserTransactions();
+                    fetchUserProfile();
+                } else {
+                    // Yahan galat ya fake TxID hone par backend ka error message popup alert mein show hoga
+                    showCustomAlert(result.message || "Auto-verification failed! Invalid TxID.", false);
+                }
             } catch (err) {
-                showCustomAlert("✔️ Deposit submitted successfully!", true);
-                loadUserTransactions();
+                showCustomAlert("Network error or server unreachable. Please try again.", false);
             }
         }
 
