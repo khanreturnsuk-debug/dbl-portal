@@ -1,233 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBL Complete Gaming & Admin Portal</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
-        
-        header { background: #1e293b; padding: 15px 25px; display: none; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-        header.visible { display: flex; }
-        .wallet-badge { background: #0f172a; padding: 8px 16px; border-radius: 20px; border: 1px solid #38bdf8; font-weight: bold; color: #38bdf8; }
-        
-        nav { display: none; background: #1e293b; border-bottom: 1px solid #334155; }
-        nav.visible { display: flex; }
-        nav button { flex: 1; padding: 14px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        nav button.active { color: #38bdf8; border-bottom: 3px solid #38bdf8; background: rgba(56, 189, 248, 0.05); }
-
-        .container { flex: 1; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; display: none; }
-        .container.active { display: block; }
-
-        /* Auth Screen (Login + Register only, no admin tab) */
-        #screen-auth { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        #screen-auth.hidden { display: none; }
-        .auth-card { background: #1e293b; padding: 30px; border-radius: 12px; width: 100%; max-width: 420px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .auth-tabs { display: flex; margin-bottom: 20px; background: #0f172a; border-radius: 8px; overflow: hidden; padding: 4px; }
-        .auth-tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-weight: bold; cursor: pointer; border-radius: 6px; }
-        .auth-tab-btn.active { background: #38bdf8; color: #0f172a; }
-
-        /* Admin Dashboard View */
-        #screen-admin { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; width: 100%; }
-        #screen-admin.active { display: block; }
-        .table-box { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden; margin-top: 15px; }
-        .table-box th, .table-box td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 0.9rem; }
-        .table-box th { background: #0f172a; color: #38bdf8; }
-
-        /* Card / Game Box */
-        .card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #cbd5e1; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; }
-        
-        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .btn:hover { background: #0ea5e9; }
-        .btn-green { background: #22c55e; color: white; }
-        .btn-green:hover { background: #16a34a; }
-        .btn-red { background: #ef4444; color: white; }
-
-        /* Aviator Canvas */
-        #aviator-canvas-box { position: relative; height: 240px; background: #090d16; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; }
-        #aviator-multiplier-overlay { position: absolute; font-size: 3rem; font-weight: bold; color: #facc15; text-shadow: 0 2px 10px rgba(0,0,0,0.8); z-index: 2; }
-        canvas#planeCanvas { width: 100%; height: 100%; display: block; }
-        
-        /* Mining Grid */
-        .mining-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
-        .tile { aspect-ratio: 1; background: #334155; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .tile:hover { background: #475569; }
-        .tile.revealed { background: #0f172a; cursor: default; }
-    </style>
-</head>
-<body>
-
-    <!-- AUTH & LOGIN/REGISTER SCREEN -->
-    <div id="screen-auth">
-        <div class="auth-card">
-            <h2 style="margin-bottom: 15px; text-align: center;">⚡ DBL Portal</h2>
-            <div class="auth-tabs">
-                <button class="auth-tab-btn active" id="at-login" onclick="switchAuthTab('login')">Login</button>
-                <button class="auth-tab-btn" id="at-register" onclick="switchAuthTab('register')">Register</button>
-            </div>
-
-            <!-- Unified Login Form (Works for normal user OR admin123 / 12345) -->
-            <div id="form-login">
-                <div class="form-group"><label>Username / Email</label><input type="text" id="login-input" placeholder="admin123 or user"></div>
-                <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-                <button class="btn btn-green" onclick="doUniversalLogin()">Login</button>
-            </div>
-
-            <!-- Register Form -->
-            <div id="form-register" style="display:none;">
-                <div class="form-group"><label>Full Name</label><input type="text" id="reg-fullname" placeholder="Muhammad Anas"></div>
-                <div class="form-group"><label>Username</label><input type="text" id="reg-username" placeholder="anas_user"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="anas@example.com"></div>
-                <div class="form-group"><label>Phone</label><input type="text" id="reg-phone" placeholder="03001234567"></div>
-                <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="••••••••"></div>
-                <button class="btn btn-green" onclick="doUserRegister()">Register Account</button>
-            </div>
-
-            <p id="auth-msg" style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: #ef4444;"></p>
-        </div>
-    </div>
-
-    <!-- MAIN APP HEADER & NAV (User Dashboard) -->
-    <header id="main-header">
-        <h2>⚡ DBL 999 HUB</h2>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div class="wallet-badge" id="header-balance">Balance: $0.00</div>
-            <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="handleLogout()">Logout</button>
-        </div>
-    </header>
-
-    <nav id="main-nav">
-        <button class="tab-btn active" onclick="switchUserTab('games', this)">🎮 Games (Aviator/Mining)</button>
-        <button class="tab-btn" onclick="switchUserTab('wallet', this)">wallet Pakistani Payments</button>
-    </nav>
-
-    <!-- GAMES SECTION -->
-    <div id="tab-games" class="container">
-        <div class="card">
-            <h3 style="margin-bottom: 15px;">Select Game</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button class="btn" style="flex:1;" onclick="selectGame('aviator')">✈️ Aviator Crash</button>
-                <button class="btn" style="flex:1; background:#64748b;" onclick="selectGame('mining')">⛏️ Mining Grid</button>
-            </div>
-
-            <!-- Aviator Animated UI -->
-            <div id="game-aviator-container">
-                <div id="aviator-canvas-box">
-                    <div id="aviator-multiplier-overlay">1.00x</div>
-                    <canvas id="planeCanvas" width="500" height="240"></canvas>
-                </div>
-                <div class="form-group">
-                    <label>Target Multiplier (Cashout)</label>
-                    <input type="number" id="aviator-target" value="2.0" step="0.1" min="1.1">
-                </div>
-            </div>
-
-            <!-- Mining UI -->
-            <div id="game-mining-container" style="display:none;">
-                <div class="mining-grid" id="grid">
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                    <div class="tile" onclick="playGameMove('mining', this)">❓</div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Bet Amount ($)</label>
-                <input type="number" id="bet-amount" value="10" min="1">
-            </div>
-            <button class="btn btn-green" id="play-btn" onclick="submitGameBet()">Place Bet & Play</button>
-            <p id="game-result-msg" style="margin-top: 15px; text-align: center; font-weight: bold;"></p>
-        </div>
-    </div>
-
-    <!-- WALLET / PAKISTANI LOCAL PAYMENTS SECTION -->
-    <div id="tab-wallet" class="container">
-        <div class="card">
-            <h3>PK / Crypto Deposit</h3>
-            <div class="form-group">
-                <label>Payment Method</label>
-                <select id="dp-method">
-                    <option value="Easypaisa">Easypaisa (Pakistan)</option>
-                    <option value="JazzCash">JazzCash (Pakistan)</option>
-                    <option value="Bank Transfer">Bank Transfer (Pakistan)</option>
-                    <option value="USDT TRC20">USDT TRC20 (Crypto)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Sender Account / Number</label>
-                <input type="text" id="dp-sender" placeholder="03001234567">
-            </div>
-            <div class="form-group">
-                <label>Amount ($ or PKR equivalent value)</label>
-                <input type="number" id="dp-amount" placeholder="10">
-            </div>
-            <div class="form-group">
-                <label>TID / Transaction Hash / Receipt Info</label>
-                <input type="text" id="dp-ref" placeholder="TID123456789">
-            </div>
-            <button class="btn btn-green" onclick="handleDeposit()">Submit Deposit</button>
-        </div>
-
-        <div class="card">
-            <h3>Withdrawal Request</h3>
-            <div class="form-group">
-                <label>Method</label>
-                <select id="wd-method">
-                    <option value="Easypaisa">Easypaisa</option>
-                    <option value="JazzCash">JazzCash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Account Number / IBAN</label>
-                <input type="text" id="wd-acc-num">
-            </div>
-            <div class="form-group">
-                <label>Account Title / Name</label>
-                <input type="text" id="wd-acc-name">
-            </div>
-            <div class="form-group">
-                <label>Amount ($)</label>
-                <input type="number" id="wd-amount" min="50">
-            </div>
-            <button class="btn" onclick="handleWithdraw()">Request Withdrawal (17% Tax)</button>
-        </div>
-        <p id="wallet-msg" style="text-align: center; font-weight: bold;"></p>
-    </div>
-
-    <!-- ADMIN PANEL SCREEN -->
-    <div id="screen-admin">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>🛡️ Admin Control Panel (admin123)</h2>
-            <button class="btn btn-red" style="width: auto; padding: 8px 16px;" onclick="handleLogout()">Logout Admin</button>
-        </div>
-        <div class="card">
-            <h3>Pending Deposits & Withdrawals</h3>
-            <table class="table-box">
-                <thead>
-                    <tr><th>User</th><th>Type</th><th>Method</th><th>Details/Amount</th><th>Status</th><th>Action</th></tr>
-                </thead>
-                <tbody id="admin-tx-table">
-                    <tr><td colspan="6" style="text-align:center;">Loading transactions...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <script>
         let currentGame = 'aviator';
         let currentUsername = localStorage.getItem('dbl_username') || '';
         let currentBalance = 0;
-        let planeAnimId = null;
+        let globalPlaneAnimId = null;
 
         window.onload = function() {
             if (localStorage.getItem('dbl_admin_token') === 'verified') {
@@ -256,8 +31,14 @@
             const input = document.getElementById('login-input').value.trim();
             const password = document.getElementById('login-pass').value.trim();
             const msgEl = document.getElementById('auth-msg');
+            msgEl.style.color = '#ef4444';
 
-            // Check if admin credentials matched directly (`admin123` / `12345`)
+            if (!input || !password) {
+                msgEl.innerText = 'Please enter username and password!';
+                return;
+            }
+
+            // Admin check
             if ((input.toLowerCase() === 'admin123' || input.toLowerCase() === 'admin') && password === '12345') {
                 localStorage.setItem('dbl_admin_token', 'verified');
                 showAdminUI();
@@ -272,26 +53,28 @@
                     body: JSON.stringify({ input, password })
                 });
                 const data = await res.json();
-                if (data.success) {
+                console.log('Login response:', data);
+                if (data.success && data.user) {
                     currentUsername = data.user.username;
                     currentBalance = Number(data.user.balance || 0);
                     localStorage.setItem('dbl_username', currentUsername);
                     showAppUI();
                 } else {
-                    msgEl.innerText = data.message || 'Login failed';
+                    msgEl.innerText = data.message || 'Invalid username or password';
                 }
             } catch (err) {
+                console.error('Login error:', err);
                 msgEl.innerText = 'Network error connecting server';
             }
         }
 
         async function doUserRegister() {
             const body = {
-                fullName: document.getElementById('reg-fullname').value,
-                username: document.getElementById('reg-username').value,
-                email: document.getElementById('reg-email').value,
-                phone: document.getElementById('reg-phone').value,
-                password: document.getElementById('reg-pass').value
+                fullName: document.getElementById('reg-fullname').value.trim(),
+                username: document.getElementById('reg-username').value.trim(),
+                email: document.getElementById('reg-email').value.trim(),
+                phone: document.getElementById('reg-phone').value.trim(),
+                password: document.getElementById('reg-pass').value.trim()
             };
             const msgEl = document.getElementById('auth-msg');
             try {
@@ -314,17 +97,24 @@
         }
 
         function showAppUI() {
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('main-header').classList.add('visible');
-            document.getElementById('main-nav').classList.add('visible');
-            document.getElementById('tab-games').classList.add('active');
-            document.getElementById('header-balance').innerText = `Balance: $${currentBalance.toFixed(2)}`;
+            const authScreen = document.getElementById('screen-auth');
+            if (authScreen) authScreen.classList.add('hidden');
+            const header = document.getElementById('main-header');
+            if (header) header.classList.add('visible');
+            const nav = document.getElementById('main-nav');
+            if (nav) nav.classList.add('visible');
+            const tabGames = document.getElementById('tab-games');
+            if (tabGames) tabGames.classList.add('active');
+            const balanceEl = document.getElementById('header-balance');
+            if (balanceEl) balanceEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
             startPlaneCanvasAnimation();
         }
 
         async function showAdminUI() {
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('screen-admin').classList.add('active');
+            const authScreen = document.getElementById('screen-auth');
+            if (authScreen) authScreen.classList.add('hidden');
+            const adminScreen = document.getElementById('screen-admin');
+            if (adminScreen) adminScreen.classList.add('active');
             await loadAdminTransactions();
         }
 
@@ -336,19 +126,21 @@
                 const dps = await resDp.json();
                 const all = [...(Array.isArray(wds) ? wds : []), ...(Array.isArray(dps) ? dps : [])];
                 const tbody = document.getElementById('admin-tx-table');
+                if (!tbody) return;
                 tbody.innerHTML = '';
                 if (all.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No transactions found</td></tr>';
                     return;
                 }
                 all.forEach(tx => {
+                    const details = tx.receiptInfo || tx.accountNumber || tx.sender || '';
                     tbody.innerHTML += `
                         <tr>
-                            <td>${tx.username}</td>
-                            <td>${tx.type}</td>
-                            <td>${tx.method}</td>
-                            <td>$${tx.amount} (${tx.accountDetails || ''})</td>
-                            <td>${tx.status}</td>
+                            <td>${tx.username || ''}</td>
+                            <td>${tx.type || 'TX'}</td>
+                            <td>${tx.method || ''}</td>
+                            <td>$${tx.amount || 0} (${details})</td>
+                            <td>${tx.status || ''}</td>
                             <td><button class="btn btn-green" style="padding:6px 10px; font-size:0.8rem;" onclick="approveTx('${tx._id}')">Approve</button></td>
                         </tr>
                     `;
@@ -376,29 +168,32 @@
         function switchUserTab(tabId, btn) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btn.classList.add('active');
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.add('active');
+            if (btn) btn.classList.add('active');
         }
 
         function selectGame(type) {
             currentGame = type;
+            const aviatorBox = document.getElementById('game-aviator-container');
+            const miningBox = document.getElementById('game-mining-container');
             if (type === 'aviator') {
-                document.getElementById('game-aviator-container').style.display = 'block';
-                document.getElementById('game-mining-container').style.display = 'none';
+                if (aviatorBox) aviatorBox.style.display = 'block';
+                if (miningBox) miningBox.style.display = 'none';
                 startPlaneCanvasAnimation();
             } else {
-                document.getElementById('game-aviator-container').style.display = 'none';
-                document.getElementById('game-mining-container').style.display = 'grid';
+                if (aviatorBox) aviatorBox.style.display = 'none';
+                if (miningBox) miningBox.style.display = 'grid';
                 stopPlaneCanvasAnimation();
             }
         }
 
-        // Aviator Canvas Flight Animation
-        const canvas = document.getElementById('planeCanvas');
-        const ctx = canvas.getContext('2d');
-        let planeAnimId = null;
         function startPlaneCanvasAnimation() {
-            if (planeAnimId) cancelAnimationFrame(planeAnimId);
+            const canvas = document.getElementById('planeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
             let frame = 0;
             function draw() {
                 frame++;
@@ -421,26 +216,32 @@
                 ctx.fillText('✈️', x - 10, y + 8);
 
                 let currentVisualMult = (1 + (x / 200)).toFixed(2);
-                document.getElementById('aviator-multiplier-overlay').innerText = `${currentVisualMult}x`;
+                const overlay = document.getElementById('aviator-multiplier-overlay');
+                if (overlay) overlay.innerText = `${currentVisualMult}x`;
 
-                planeAnimId = requestAnimationFrame(draw);
+                globalPlaneAnimId = requestAnimationFrame(draw);
             }
             draw();
         }
 
         function stopPlaneCanvasAnimation() {
-            if (planeAnimId) cancelAnimationFrame(planeAnimId);
+            if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
         }
 
         async function submitGameBet() {
-            const betAmount = document.getElementById('bet-amount').value;
-            const targetChoice = document.getElementById('aviator-target').value;
+            const betAmountInput = document.getElementById('bet-amount');
+            const targetChoiceInput = document.getElementById('aviator-target');
+            if (!betAmountInput || !targetChoiceInput) return;
+            const betAmount = betAmountInput.value;
+            const targetChoice = targetChoiceInput.value;
             const msgEl = document.getElementById('game-result-msg');
             const playBtn = document.getElementById('play-btn');
             
-            playBtn.disabled = true;
-            msgEl.style.color = '#cbd5e1';
-            msgEl.innerText = 'Plane flying... Round in progress!';
+            if (playBtn) playBtn.disabled = true;
+            if (msgEl) {
+                msgEl.style.color = '#cbd5e1';
+                msgEl.innerText = 'Plane flying... Round in progress!';
+            }
 
             try {
                 const res = await fetch('/api/game/play', {
@@ -455,27 +256,33 @@
                 });
                 const data = await res.json();
                 setTimeout(() => {
-                    playBtn.disabled = false;
+                    if (playBtn) playBtn.disabled = false;
                     if (data.success) {
                         currentBalance = Number(data.balance);
-                        msgEl.style.color = data.isWin ? '#22c55e' : '#ef4444';
-                        msgEl.innerText = `${data.message} | Multiplier: ${data.multiplier}x`;
-                        document.getElementById('header-balance').innerText = `Balance: $${currentBalance.toFixed(2)}`;
-                        document.getElementById('aviator-multiplier-overlay').innerText = data.isWin ? `${data.multiplier}x WIN!` : 'CRASHED!';
-                    } else {
+                        if (msgEl) {
+                            msgEl.style.color = data.isWin ? '#22c55e' : '#ef4444';
+                            msgEl.innerText = `${data.message} | Multiplier: ${data.multiplier}x`;
+                        }
+                        const balEl = document.getElementById('header-balance');
+                        if (balEl) balEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
+                        const overlay = document.getElementById('aviator-multiplier-overlay');
+                        if (overlay) overlay.innerText = data.isWin ? `${data.multiplier}x WIN!` : 'CRASHED!';
+                    } else if (msgEl) {
                         msgEl.style.color = '#ef4444';
-                        msgEl.innerText = data.message;
+                        msgEl.innerText = data.message || 'Game failed';
                     }
                 }, 1200);
             } catch (err) {
-                playBtn.disabled = false;
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'Network error playing game!';
+                if (playBtn) playBtn.disabled = false;
+                if (msgEl) {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = 'Network error playing game!';
+                }
             }
         }
 
         function playGameMove(type, el) {
-            if (type === 'mining') {
+            if (type === 'mining' && el) {
                 el.innerText = Math.random() > 0.4 ? '💎' : '💣';
                 el.classList.add('revealed');
             }
@@ -497,11 +304,15 @@
                     body: JSON.stringify(body)
                 });
                 const data = await res.json();
-                msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
-                msgEl.innerText = data.message;
+                if (msgEl) {
+                    msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
+                    msgEl.innerText = data.message;
+                }
             } catch (e) {
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'Deposit request failed.';
+                if (msgEl) {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = 'Deposit request failed.';
+                }
             }
         }
 
@@ -521,13 +332,15 @@
                     body: JSON.stringify(body)
                 });
                 const data = await res.json();
-                msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
-                msgEl.innerText = data.message;
+                if (msgEl) {
+                    msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
+                    msgEl.innerText = data.message;
+                }
             } catch (e) {
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'Withdrawal request failed.';
+                if (msgEl) {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = 'Withdrawal request failed.';
+                }
             }
         }
     </script>
-</body>
-</html>
