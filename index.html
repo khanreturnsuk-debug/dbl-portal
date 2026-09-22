@@ -1,318 +1,434 @@
-<script>
-    // Agar Vercel par /api folder use kar rahe ho toh '' (khali) rakho, 
-    // agar alag server (Render/Railway) hai toh yahan live URL dalo: e.g. 'https://your-backend.onrender.com'
-    const BACKEND_URL = ''; 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBL Platform</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 20px; }
+        .hidden { display: none !important; }
+        .active { display: block !important; }
+        .container { display: none; }
+        .container.active { display: block; }
+        header, nav { display: none; }
+        header.visible, nav.visible { display: flex; }
+        header { justify-content: space-between; align-items: center; margin-bottom: 20px; background: #1e293b; padding: 15px; border-radius: 8px; }
+        nav { gap: 10px; margin-bottom: 20px; }
+        nav button, .btn { background: #38bdf8; color: #0f172a; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-green { background: #22c55e; color: #fff; }
+        .auth-box, .panel-box { background: #1e293b; padding: 20px; border-radius: 8px; max-width: 400px; margin: 40px auto; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; border-bottom: 1px solid #334155; text-align: left; }
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .auth-tab-btn { flex: 1; padding: 8px; background: #334155; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .auth-tab-btn.active { background: #38bdf8; color: #0f172a; }
+        canvas { background: #090d16; width: 100%; height: 200px; border-radius: 8px; }
+    </style>
+</head>
+<body>
 
-    let currentGame = 'aviator';
-    let currentUsername = localStorage.getItem('dbl_username') || '';
-    let currentBalance = 0;
-    let globalPlaneAnimId = null;
+    <!-- Auth Screen -->
+    <div id="screen-auth" class="auth-box">
+        <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="at-login" onclick="switchAuthTab('login')">Login</button>
+            <button class="auth-tab-btn" id="at-register" onclick="switchAuthTab('register')">Register</button>
+        </div>
+        <div id="auth-msg" style="color: #ef4444; margin-bottom: 10px; font-size: 0.9rem;"></div>
+        
+        <div id="form-login">
+            <input type="text" id="login-input" placeholder="Username / Email">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="btn" style="width:100%" onclick="doUniversalLogin()">Login</button>
+        </div>
 
-    window.onload = function() {
-        if (localStorage.getItem('dbl_admin_token') === 'verified') {
-            showAdminUI();
-        } else if (currentUsername) {
-            showAppUI();
-        }
-    };
+        <div id="form-register" style="display:none;">
+            <input type="text" id="reg-fullname" placeholder="Full Name">
+            <input type="text" id="reg-username" placeholder="Username">
+            <input type="email" id="reg-email" placeholder="Email">
+            <input type="text" id="reg-phone" placeholder="Phone">
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button class="btn" style="width:100%" onclick="doUserRegister()">Register</button>
+        </div>
+    </div>
 
-    function switchAuthTab(type) {
-        document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('form-login').style.display = 'none';
-        document.getElementById('form-register').style.display = 'none';
-        document.getElementById('auth-msg').innerText = '';
+    <!-- Main Header -->
+    <header id="main-header">
+        <h3>DBL App</h3>
+        <span id="header-balance">Balance: $0.00</span>
+        <button class="btn" onclick="handleLogout()">Logout</button>
+    </header>
 
-        if (type === 'login') {
-            document.getElementById('at-login').classList.add('active');
-            document.getElementById('form-login').style.display = 'block';
-        } else if (type === 'register') {
-            document.getElementById('at-register').classList.add('active');
-            document.getElementById('form-register').style.display = 'block';
-        }
-    }
+    <!-- Main Nav -->
+    <nav id="main-nav">
+        <button id="tab-games" class="active" onclick="switchUserTab('games', this)">Games</button>
+        <button onclick="switchUserTab('wallet', this)">Wallet</button>
+    </nav>
 
-    async function doUniversalLogin() {
-        const input = document.getElementById('login-input').value.trim();
-        const password = document.getElementById('login-pass').value.trim();
-        const msgEl = document.getElementById('auth-msg');
-        msgEl.style.color = '#ef4444';
+    <!-- Games Tab -->
+    <div id="tab-games" class="container active">
+        <div style="margin-bottom: 15px; display:flex; gap:10px;">
+            <button class="btn" onclick="selectGame('aviator')">Aviator</button>
+            <button class="btn" onclick="selectGame('mining')">Mining</button>
+        </div>
+        <div id="game-aviator-container">
+            <div style="position:relative;">
+                <canvas id="planeCanvas" width="400" height="200"></canvas>
+                <div id="aviator-multiplier-overlay" style="position:absolute; top:20px; left:20px; font-size:1.5rem; font-weight:bold; color:#facc15;">1.00x</div>
+            </div>
+            <input type="number" id="bet-amount" placeholder="Bet Amount ($)" style="margin-top:10px;">
+            <input type="number" id="aviator-target" value="2.0" placeholder="Target Multiplier" style="margin-top:10px;">
+            <button class="btn btn-green" id="play-btn" style="width:100%; margin-top:10px;" onclick="submitGameBet()">Place Bet</button>
+            <div id="game-result-msg" style="margin-top:10px;"></div>
+        </div>
+        <div id="game-mining-container" style="display:none; grid-template-columns: repeat(3, 1fr); gap:10px; max-width:300px;">
+            <button class="btn" style="height:60px;" onclick="playGameMove('mining', this)">❓</button>
+            <button class="btn" style="height:60px;" onclick="playGameMove('mining', this)">❓</button>
+            <button class="btn" style="height:60px;" onclick="playGameMove('mining', this)">❓</button>
+        </div>
+    </div>
 
-        if (!input || !password) {
-            msgEl.innerText = 'Username and password required!';
-            return;
-        }
+    <!-- Wallet Tab -->
+    <div id="tab-wallet" class="container">
+        <div class="panel-box">
+            <h4>Deposit Funds</h4>
+            <input type="text" id="dp-method" placeholder="Method (JazzCash/Easypaisa)">
+            <input type="text" id="dp-sender" placeholder="Sender Account">
+            <input type="number" id="dp-amount" placeholder="Amount">
+            <input type="text" id="dp-ref" placeholder="Reference / TXID">
+            <button class="btn btn-green" style="width:100%" onclick="handleDeposit()">Submit Deposit</button>
+            <div id="wallet-msg" style="margin-top:10px;"></div>
+        </div>
+    </div>
 
-        // Hardcoded admin quick access check
-        if ((input.toLowerCase() === 'admin123' || input.toLowerCase() === 'admin') && password === '12345') {
-            localStorage.setItem('dbl_admin_token', 'verified');
-            showAdminUI();
-            return;
-        }
+    <!-- Admin Screen -->
+    <div id="screen-admin" class="auth-box hidden" style="max-width:800px;">
+        <h3>Admin Panel - Deposits</h3>
+        <button class="btn" onclick="handleLogout()" style="margin-bottom:15px;">Admin Logout</button>
+        <table>
+            <thead>
+                <tr><th>User</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="admin-tx-table"></tbody>
+        </table>
+    </div>
 
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ input, password })
-            });
-            const data = await res.json();
-            if (data.success && data.user) {
-                currentUsername = data.user.username;
-                currentBalance = Number(data.user.balance || 0);
-                localStorage.setItem('dbl_username', currentUsername);
+    <script>
+        const BACKEND_URL = ''; // Vercel relative path ke liye '' khali rakho
+        let currentGame = 'aviator';
+        let currentUsername = localStorage.getItem('dbl_username') || '';
+        let currentBalance = 0;
+        let globalPlaneAnimId = null;
+
+        window.onload = function() {
+            if (localStorage.getItem('dbl_admin_token') === 'verified') {
+                showAdminUI();
+            } else if (currentUsername) {
                 showAppUI();
-            } else {
-                msgEl.innerText = data.message || 'Invalid username or password';
             }
-        } catch (err) {
-            console.error('Real Login Error:', err);
-            msgEl.innerText = 'Network error: Backend unreachable / API route missing';
-        }
-    }
-
-    async function doUserRegister() {
-        const body = {
-            fullName: document.getElementById('reg-fullname').value.trim(),
-            username: document.getElementById('reg-username').value.trim(),
-            email: document.getElementById('reg-email').value.trim(),
-            phone: document.getElementById('reg-phone').value.trim(),
-            password: document.getElementById('reg-pass').value.trim()
         };
-        const msgEl = document.getElementById('auth-msg');
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            const data = await res.json();
-            if (data.success) {
-                msgEl.style.color = '#22c55e';
-                msgEl.innerText = 'Registered successfully! Switch to login.';
-            } else {
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = data.message || 'Registration failed';
+
+        function switchAuthTab(type) {
+            document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('form-login').style.display = 'none';
+            document.getElementById('form-register').style.display = 'none';
+            document.getElementById('auth-msg').innerText = '';
+
+            if (type === 'login') {
+                document.getElementById('at-login').classList.add('active');
+                document.getElementById('form-login').style.display = 'block';
+            } else if (type === 'register') {
+                document.getElementById('at-register').classList.add('active');
+                document.getElementById('form-register').style.display = 'block';
             }
-        } catch (err) {
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = 'Network error connecting server';
         }
-    }
 
-    function showAppUI() {
-        const authScreen = document.getElementById('screen-auth');
-        if (authScreen) authScreen.classList.add('hidden');
-        const header = document.getElementById('main-header');
-        if (header) header.classList.add('visible');
-        const nav = document.getElementById('main-nav');
-        if (nav) nav.classList.add('visible');
-        const tabGames = document.getElementById('tab-games');
-        if (tabGames) tabGames.classList.add('active');
-        const balanceEl = document.getElementById('header-balance');
-        if (balanceEl) balanceEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
-        startPlaneCanvasAnimation();
-    }
+        async function doUniversalLogin() {
+            const input = document.getElementById('login-input').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const msgEl = document.getElementById('auth-msg');
+            msgEl.style.color = '#ef4444';
 
-    async function showAdminUI() {
-        const authScreen = document.getElementById('screen-auth');
-        if (authScreen) authScreen.classList.add('hidden');
-        const adminScreen = document.getElementById('screen-admin');
-        if (adminScreen) adminScreen.classList.add('active');
-        await loadAdminTransactions();
-    }
-
-    async function loadAdminTransactions() {
-        try {
-            const resDp = await fetch(`${BACKEND_URL}/api/admin/deposits`);
-            const dps = await resDp.json();
-            const all = Array.isArray(dps) ? dps : [];
-            const tbody = document.getElementById('admin-tx-table');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            if (all.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No transactions found</td></tr>';
+            if (!input || !password) {
+                msgEl.innerText = 'Username and password required!';
                 return;
             }
-            all.forEach(tx => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${tx.username || ''}</td>
-                        <td>Deposit</td>
-                        <td>${tx.method || ''}</td>
-                        <td>$${tx.amount || 0}</td>
-                        <td>${tx.status || 'Pending'}</td>
-                        <td><button class="btn btn-green" style="padding:6px 10px; font-size:0.8rem;" onclick="approveTx('${tx._id}')">Approve</button></td>
-                    </tr>
-                `;
-            });
-        } catch (e) {
-            console.error('Admin load error:', e);
-        }
-    }
 
-    async function approveTx(reqId) {
-        await fetch(`${BACKEND_URL}/api/admin/transaction/update`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reqId, status: 'Approved' })
-        });
-        loadAdminTransactions();
-    }
+            if ((input.toLowerCase() === 'admin123' || input.toLowerCase() === 'admin') && password === '12345') {
+                localStorage.setItem('dbl_admin_token', 'verified');
+                showAdminUI();
+                return;
+            }
 
-    function handleLogout() {
-        localStorage.removeItem('dbl_username');
-        localStorage.removeItem('dbl_admin_token');
-        location.reload();
-    }
-
-    function switchUserTab(tabId, btn) {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        const targetTab = document.getElementById('tab-' + tabId);
-        if (targetTab) targetTab.classList.add('active');
-        if (btn) btn.classList.add('active');
-    }
-
-    function selectGame(type) {
-        currentGame = type;
-        const aviatorBox = document.getElementById('game-aviator-container');
-        const miningBox = document.getElementById('game-mining-container');
-        if (type === 'aviator') {
-            if (aviatorBox) aviatorBox.style.display = 'block';
-            if (miningBox) miningBox.style.display = 'none';
-            startPlaneCanvasAnimation();
-        } else {
-            if (aviatorBox) aviatorBox.style.display = 'none';
-            if (miningBox) miningBox.style.display = 'grid';
-            stopPlaneCanvasAnimation();
-        }
-    }
-
-    function startPlaneCanvasAnimation() {
-        const canvas = document.getElementById('planeCanvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
-        let frame = 0;
-        function draw() {
-            frame++;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
-            
-            ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height);
-            let x = (frame * 2.5) % canvas.width;
-            let y = canvas.height - Math.min(canvas.height - 20, Math.pow(x / 4, 1.8));
-            ctx.quadraticCurveTo(x/2, canvas.height, x, y);
-            ctx.stroke();
-
-            ctx.fillStyle = '#facc15';
-            ctx.font = '22px Arial';
-            ctx.fillText('✈️', x - 10, y + 8);
-
-            let currentVisualMult = (1 + (x / 200)).toFixed(2);
-            const overlay = document.getElementById('aviator-multiplier-overlay');
-            if (overlay) overlay.innerText = `${currentVisualMult}x`;
-
-            globalPlaneAnimId = requestAnimationFrame(draw);
-        }
-        draw();
-    }
-
-    function stopPlaneCanvasAnimation() {
-        if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
-    }
-
-    async function submitGameBet() {
-        const betAmountInput = document.getElementById('bet-amount');
-        const targetChoiceInput = document.getElementById('aviator-target');
-        if (!betAmountInput || !targetChoiceInput) return;
-        const betAmount = betAmountInput.value;
-        const targetChoice = targetChoiceInput.value;
-        const msgEl = document.getElementById('game-result-msg');
-        const playBtn = document.getElementById('play-btn');
-        
-        if (playBtn) playBtn.disabled = true;
-        if (msgEl) {
-            msgEl.style.color = '#cbd5e1';
-            msgEl.innerText = 'Plane flying... Round in progress!';
-        }
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/game/play`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: currentUsername,
-                    betAmount: Number(betAmount),
-                    gameType: currentGame,
-                    multiplierChoice: targetChoice
-                })
-            });
-            const data = await res.json();
-            setTimeout(() => {
-                if (playBtn) playBtn.disabled = false;
-                if (data.success) {
-                    currentBalance = Number(data.balance);
-                    if (msgEl) {
-                        msgEl.style.color = data.isWin ? '#22c55e' : '#ef4444';
-                        msgEl.innerText = `${data.message} | Multiplier: ${data.multiplier}x`;
-                    }
-                    const balEl = document.getElementById('header-balance');
-                    if (balEl) balEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
-                    const overlay = document.getElementById('aviator-multiplier-overlay');
-                    if (overlay) overlay.innerText = data.isWin ? `${data.multiplier}x WIN!` : 'CRASHED!';
-                } else if (msgEl) {
-                    msgEl.style.color = '#ef4444';
-                    msgEl.innerText = data.message || 'Game failed';
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input, password })
+                });
+                const data = await res.json();
+                if (data.success && data.user) {
+                    currentUsername = data.user.username;
+                    currentBalance = Number(data.user.balance || 0);
+                    localStorage.setItem('dbl_username', currentUsername);
+                    showAppUI();
+                } else {
+                    msgEl.innerText = data.message || 'Invalid username or password';
                 }
-            }, 1200);
-        } catch (err) {
-            if (playBtn) playBtn.disabled = false;
-            if (msgEl) {
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'Network error playing game!';
+            } catch (err) {
+                msgEl.innerText = 'Network error: Backend unreachable / API route missing';
             }
         }
-    }
 
-    function playGameMove(type, el) {
-        if (type === 'mining' && el) {
-            el.innerText = Math.random() > 0.4 ? '💎' : '💣';
-            el.classList.add('revealed');
+        async function doUserRegister() {
+            const body = {
+                fullName: document.getElementById('reg-fullname').value.trim(),
+                username: document.getElementById('reg-username').value.trim(),
+                email: document.getElementById('reg-email').value.trim(),
+                phone: document.getElementById('reg-phone').value.trim(),
+                password: document.getElementById('reg-pass').value.trim()
+            };
+            const msgEl = document.getElementById('auth-msg');
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgEl.style.color = '#22c55e';
+                    msgEl.innerText = 'Registered successfully! Switch to login.';
+                } else {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = data.message || 'Registration failed';
+                }
+            } catch (err) {
+                msgEl.style.color = '#ef4444';
+                msgEl.innerText = 'Network error connecting server';
+            }
         }
-    }
 
-    async function handleDeposit() {
-        const body = {
-            username: currentUsername,
-            method: document.getElementById('dp-method').value,
-            sender: document.getElementById('dp-sender').value,
-            amount: Number(document.getElementById('dp-amount').value),
-            receiptInfo: document.getElementById('dp-ref').value
-        };
-        const msgEl = document.getElementById('wallet-msg');
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/deposit`, {
+        function showAppUI() {
+            const authScreen = document.getElementById('screen-auth');
+            if (authScreen) authScreen.classList.add('hidden');
+            const header = document.getElementById('main-header');
+            if (header) header.classList.add('visible');
+            const nav = document.getElementById('main-nav');
+            if (nav) nav.classList.add('visible');
+            const tabGames = document.getElementById('tab-games');
+            if (tabGames) tabGames.classList.add('active');
+            const balanceEl = document.getElementById('header-balance');
+            if (balanceEl) balanceEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
+            startPlaneCanvasAnimation();
+        }
+
+        async function showAdminUI() {
+            const authScreen = document.getElementById('screen-auth');
+            if (authScreen) authScreen.classList.add('hidden');
+            const adminScreen = document.getElementById('screen-admin');
+            if (adminScreen) {
+                adminScreen.classList.remove('hidden');
+                adminScreen.classList.add('active');
+            }
+            await loadAdminTransactions();
+        }
+
+        async function loadAdminTransactions() {
+            try {
+                const resDp = await fetch(`${BACKEND_URL}/api/admin/deposits`);
+                const dps = await resDp.json();
+                const all = Array.isArray(dps) ? dps : [];
+                const tbody = document.getElementById('admin-tx-table');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                if (all.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No transactions found</td></tr>';
+                    return;
+                }
+                all.forEach(tx => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${tx.username || ''}</td>
+                            <td>Deposit</td>
+                            <td>${tx.method || ''}</td>
+                            <td>$${tx.amount || 0}</td>
+                            <td>${tx.status || 'Pending'}</td>
+                            <td><button class="btn btn-green" style="padding:6px 10px; font-size:0.8rem;" onclick="approveTx('${tx._id}')">Approve</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                console.error('Admin load error:', e);
+            }
+        }
+
+        async function approveTx(reqId) {
+            await fetch(`${BACKEND_URL}/api/admin/transaction/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify({ reqId, status: 'Approved' })
             });
-            const data = await res.json();
-            if (msgEl) {
-                msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
-                msgEl.innerText = data.message;
-            }
-        } catch (e) {
-            if (msgEl) {
-                msgEl.style.color = '#ef4444';
-                msgEl.innerText = 'Deposit request failed.';
+            loadAdminTransactions();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('dbl_username');
+            localStorage.removeItem('dbl_admin_token');
+            location.reload();
+        }
+
+        function switchUserTab(tabId, btn) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function selectGame(type) {
+            currentGame = type;
+            const aviatorBox = document.getElementById('game-aviator-container');
+            const miningBox = document.getElementById('game-mining-container');
+            if (type === 'aviator') {
+                if (aviatorBox) aviatorBox.style.display = 'block';
+                if (miningBox) miningBox.style.display = 'none';
+                startPlaneCanvasAnimation();
+            } else {
+                if (aviatorBox) aviatorBox.style.display = 'none';
+                if (miningBox) miningBox.style.display = 'grid';
+                stopPlaneCanvasAnimation();
             }
         }
-    }
-</script>
+
+        function startPlaneCanvasAnimation() {
+            const canvas = document.getElementById('planeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
+            let frame = 0;
+            function draw() {
+                frame++;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+                
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height);
+                let x = (frame * 2.5) % canvas.width;
+                let y = canvas.height - Math.min(canvas.height - 20, Math.pow(x / 4, 1.8));
+                ctx.quadraticCurveTo(x/2, canvas.height, x, y);
+                ctx.stroke();
+
+                ctx.fillStyle = '#facc15';
+                ctx.font = '22px Arial';
+                ctx.fillText('✈️', x - 10, y + 8);
+
+                let currentVisualMult = (1 + (x / 200)).toFixed(2);
+                const overlay = document.getElementById('aviator-multiplier-overlay');
+                if (overlay) overlay.innerText = `${currentVisualMult}x`;
+
+                globalPlaneAnimId = requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function stopPlaneCanvasAnimation() {
+            if (globalPlaneAnimId) cancelAnimationFrame(globalPlaneAnimId);
+        }
+
+        async function submitGameBet() {
+            const betAmountInput = document.getElementById('bet-amount');
+            const targetChoiceInput = document.getElementById('aviator-target');
+            if (!betAmountInput || !targetChoiceInput) return;
+            const betAmount = betAmountInput.value;
+            const targetChoice = targetChoiceInput.value;
+            const msgEl = document.getElementById('game-result-msg');
+            const playBtn = document.getElementById('play-btn');
+            
+            if (playBtn) playBtn.disabled = true;
+            if (msgEl) {
+                msgEl.style.color = '#cbd5e1';
+                msgEl.innerText = 'Plane flying... Round in progress!';
+            }
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/game/play`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: currentUsername,
+                        betAmount: Number(betAmount),
+                        gameType: currentGame,
+                        multiplierChoice: targetChoice
+                    })
+                });
+                const data = await res.json();
+                setTimeout(() => {
+                    if (playBtn) playBtn.disabled = false;
+                    if (data.success) {
+                        currentBalance = Number(data.balance);
+                        if (msgEl) {
+                            msgEl.style.color = data.isWin ? '#22c55e' : '#ef4444';
+                            msgEl.innerText = `${data.message} | Multiplier: ${data.multiplier}x`;
+                        }
+                        const balEl = document.getElementById('header-balance');
+                        if (balEl) balEl.innerText = `Balance: $${currentBalance.toFixed(2)}`;
+                        const overlay = document.getElementById('aviator-multiplier-overlay');
+                        if (overlay) overlay.innerText = data.isWin ? `${data.multiplier}x WIN!` : 'CRASHED!';
+                    } else if (msgEl) {
+                        msgEl.style.color = '#ef4444';
+                        msgEl.innerText = data.message || 'Game failed';
+                    }
+                }, 1200);
+            } catch (err) {
+                if (playBtn) playBtn.disabled = false;
+                if (msgEl) {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = 'Network error playing game!';
+                }
+            }
+        }
+
+        function playGameMove(type, el) {
+            if (type === 'mining' && el) {
+                el.innerText = Math.random() > 0.4 ? '💎' : '💣';
+                el.classList.add('revealed');
+            }
+        }
+
+        async function handleDeposit() {
+            const body = {
+                username: currentUsername,
+                method: document.getElementById('dp-method').value,
+                sender: document.getElementById('dp-sender').value,
+                amount: Number(document.getElementById('dp-amount').value),
+                receiptInfo: document.getElementById('dp-ref').value
+            };
+            const msgEl = document.getElementById('wallet-msg');
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/deposit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (msgEl) {
+                    msgEl.style.color = data.success ? '#22c55e' : '#ef4444';
+                    msgEl.innerText = data.message;
+                }
+            } catch (e) {
+                if (msgEl) {
+                    msgEl.style.color = '#ef4444';
+                    msgEl.innerText = 'Deposit request failed.';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
